@@ -69,6 +69,10 @@ ul{
   list-style: none;
 }
 
+.wmde-markdown{
+  background-color: var(--darkest-color);
+}
+
 /* Scrollbar management */
 ::-webkit-scrollbar {
     width: 0.3vw;
