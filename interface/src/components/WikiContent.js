@@ -33,6 +33,13 @@ function WikiContent() {
         return false;
     };
 
+    const isUserOwner = () => {
+        if (localStorage.getItem('account') !== null && wiki) {
+            return parseInt(localStorage.getItem('account')) === wiki.owner;
+        }
+        return false;
+    }
+
     function deleteEntry(entryId, entryName) {
       if (window.confirm("Voulez vous vraiment supprimer l'entrée " + entryName)) {
         axios.get(`${API_URL}/delete/entry/${entryId}`).then((res) => {
@@ -69,7 +76,7 @@ function WikiContent() {
         <div>
             <h2>Wiki {wiki?.nom || ""}</h2>
             <p>{wiki?.description || ""}</p>
-            {isUserAdmin() && (
+            {isUserOwner() && (
                 <div>
                     <Link to={`/wiki/${id}/admin`}>
                     <button style={{ cursor: 'pointer' }}>Gérer les Administrateurs</button>
