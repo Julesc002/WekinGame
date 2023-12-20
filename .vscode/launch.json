@@ -5,6 +5,13 @@
             "name": "RunApplication",
             "request": "launch",
             "mainClass": "com.wekinGame.RunApplication",
+            "projectName": "Controllers"
+        },
+        {
+            "type": "java",
+            "name": "RunApplication",
+            "request": "launch",
+            "mainClass": "com.wekinGame.RunApplication",
             "projectName": "spring-boot-openapi"
         },
         {

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
+import MDEditor from "@uiw/react-md-editor";
 
 function DetailEntree() {
     const { id } = useParams();
@@ -45,7 +46,7 @@ function DetailEntree() {
                         {entry[0].donnees.map((donnee, index) => (
                             <div key={index}>
                                 <h3>{donnee.titre}</h3>
-                                <p class="append tabulate">{donnee.contenu}</p>
+                                <MDEditor.Markdown source={donnee.contenu}/>
                             </div>
                         ))}
                     </div>

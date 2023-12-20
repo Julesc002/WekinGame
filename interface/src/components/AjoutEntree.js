@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
+import MDEditor from "@uiw/react-md-editor";
 
 function AjoutEntree() {
     const { id } = useParams();
@@ -13,6 +14,8 @@ function AjoutEntree() {
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
+    const [markdownContent, setMarkdownContent] = useState([]);
+
     const handleRetourClick = () => {
         navigate(-1);
     };
@@ -20,6 +23,13 @@ function AjoutEntree() {
     const majNameEntree = (e) => {
         setName(e.target.value);
     };
+    const renderMarkdownEditor = (index) => (
+        <MDEditor
+            height={200}
+            value={markdownContent[index]}
+            onChange={(e) => handleMajDonneeContent(e, index)}
+        />
+    );
 
     useEffect(() => {
         const majEntree = {
@@ -35,9 +45,9 @@ function AjoutEntree() {
       }, [name, id, categoriesForEntree, donnees]);
       
 
-      const addEntree = () => {
+    const addEntree = () => {
         const checkContentDonnees = donnees.some(function (donnee) {
-            return donnee[0].trim().length === 0 || donnee[1].trim().length === 0;
+            return donnee[0].trim().length === 0 || donnee[1].size === 0;
         });
     
         if (name.trim().length === 0) {
@@ -89,9 +99,12 @@ function AjoutEntree() {
     };
 
     const handleMajDonneeContent = (e, index) => {
+        const mdContent = [...markdownContent];
         const donneesCopie = [...donnees];
-        donneesCopie[index][1] = e.target.value;
+        donneesCopie[index][1] = e;
+        mdContent[index]=e;
         setDonnees(donneesCopie);
+        setMarkdownContent(mdContent);
     };
 
     useEffect(() => {
@@ -131,7 +144,7 @@ function AjoutEntree() {
                                     <input type="text" placeholder="Titre" value={donnees[index][0]} onChange={(e) => handleMajDonneeTitle(e, index)} />
                                     <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                 </div>
-                                <textarea rows="10" value={donnees[index][1]} onChange={(e) => handleMajDonneeContent(e, index)} ></textarea>
+                                {renderMarkdownEditor(index)}
                         </div>
                     );
                 })}
