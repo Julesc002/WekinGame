@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
+import MDEditor from "@uiw/react-md-editor";
 
 function ModificationEntree() {
     const { wikiId, entreeId } = useParams();
@@ -111,7 +112,7 @@ function ModificationEntree() {
 
     const handleMajDonneeContent = (e, index) => {
         const donneesCopie = [...entreeDonnees];
-        donneesCopie[index].contenu = e.target.value;
+        donneesCopie[index].contenu = e;
         setEntreeDonnees(donneesCopie);
     };
 
@@ -121,6 +122,13 @@ function ModificationEntree() {
         donneesCopie.push(nouvelleDonnee);
         setEntreeDonnees(donneesCopie);
     };
+    const renderMarkdownEditor = (index) => (
+        <MDEditor
+            height={200}
+            value={entreeDonnees[index].contenu}
+            onChange={(e) => handleMajDonneeContent(e, index)}
+        />
+    );
 
     return (
         <div className="flex-down">
@@ -152,7 +160,7 @@ function ModificationEntree() {
                                             <input type="text" placeholder="Titre" value={entreeDonnees[index].titre} onChange={(e) => handleMajDonneeTitle(e, index)} />
                                             <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                         </div>
-                                        <textarea rows="10" value={entreeDonnees[index].contenu} onChange={(e) => handleMajDonneeContent(e, index)} ></textarea>
+                                        {renderMarkdownEditor(index)}
                                 </div>
                             );
                         })}
