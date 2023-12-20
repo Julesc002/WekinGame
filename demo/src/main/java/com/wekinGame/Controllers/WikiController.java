@@ -137,6 +137,7 @@ public class WikiController {
         result.put("nom", wiki.getString("nom"));
         result.put("date_creation", wiki.getString("date_creation"));
         result.put("description", wiki.getString("description"));
+        result.put("owner", wiki.get("owner"));
         result.put("admins", wiki.get("admins"));
         result.put("categories", categoryList);
         result.put("categoriesWithoutEntry", categoriesWithoutEntry);
