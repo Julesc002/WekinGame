@@ -74,11 +74,11 @@ public class WikiController {
             String date = "" + LocalDate.now().format(patternJour);
             int id = WikiRepository.getMaxId() + 1;
             Document newWiki = new Document("_id", id)
-            .append("nom", newWikiData.get("nom"))
-            .append("description", newWikiData.get("description"))
-            .append("admins", admins)
-            .append("categories", categories)
-            .append("date_creation", date);
+                .append("nom", newWikiData.get("nom"))
+                .append("description", newWikiData.get("description"))
+                .append("admins", admins)
+                .append("categories", categories)
+                .append("date_creation", date);
             WikiRepository.push(newWiki);
             return new Document("_id", id);
         } catch (Exception e) {
