@@ -55,8 +55,10 @@ public class CategoryController {
     }
 
     @GetMapping("/category/{idWiki}/{nameCategory}")
-    public List<Document> getEntryNameWithWikiIdAndCategoryName(@PathVariable("idWiki") String idWiki,
-            @PathVariable("nameCategory") String nameCategory) {
+    public List<Document> getEntryNameWithWikiIdAndCategoryName(
+        @PathVariable("idWiki") String idWiki,
+        @PathVariable("nameCategory") String nameCategory
+    ) {
         List<Document> resultsQuery = new ArrayList<Document>();
         Document searchQuery = new Document();
         searchQuery.put("id_wiki", Integer.parseInt(idWiki));
@@ -67,7 +69,6 @@ public class CategoryController {
                         Projections.include("_id", "nom"))));
         MongoCollection<Document> collection = database.getCollection("entrees");
         AggregateIterable<Document> cursor = collection.aggregate(pipeline);
-
         try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
             while (cursorIterator.hasNext()) {
                 resultsQuery.add(cursorIterator.next());
