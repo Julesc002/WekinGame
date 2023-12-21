@@ -21,8 +21,8 @@ import com.wekinGame.Repository.WikiRepository;
 public class CategoryController {
 
     @GetMapping("/category/{idWiki}")
-    public List<String> getCategoryWithIdWiki(@PathVariable("idWiki")final String idWiki) {
-        return (List<String>) WikiRepository.getWikiById(Integer.parseInt(idWiki)).get("categories");
+    public List<String> getCategoryWithIdWiki(@PathVariable("idWiki") String idWiki) {
+        return (List<String>) WikiRepository.getById(Integer.parseInt(idWiki)).get("categories");
     }
     
     @GetMapping("/category/{idWiki}/{nameCategory}")
@@ -36,14 +36,14 @@ public class CategoryController {
     @PatchMapping("/wiki/{id}/category/create")
     public Map<String, String> createCategory(@PathVariable("id")final String idWiki, @RequestBody final Map<String, String> request) {
         try{
-            Document wiki = WikiRepository.getWikiById(Integer.parseInt(idWiki));
+            Document wiki = WikiRepository.getById(Integer.parseInt(idWiki));
             String nameNewCategory = request.get("nom");
             List<String> wikiCategories = (List<String>) wiki.get("categories");
             Map<String, String> response = new HashMap<>();
             if (!wikiCategories.contains(nameNewCategory)) {
                 wikiCategories.add(nameNewCategory);
                 wiki.put("categories", wikiCategories);
-                WikiRepository.addCategory(Integer.parseInt(idWiki), wiki);
+                WikiRepository.addCategory(Integer.parseInt(idWiki),wiki);
                 response.put("code", "200");
                 response.put("message", "Catégorie ajoutée avec succès");
             } else {
