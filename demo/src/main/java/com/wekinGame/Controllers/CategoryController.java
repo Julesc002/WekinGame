@@ -13,17 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.wekinGame.Repository.DatabaseRepository;
 import com.wekinGame.Repository.EntryRepository;
 import com.wekinGame.Repository.WikiRepository;
 
 @RestController
 public class CategoryController {
-
-private static MongoDatabase database = DatabaseRepository.getDatabase();
-    private static MongoCollection<Document> collection = database.getCollection("wikis");
 
     @GetMapping("/category/{idWiki}")
     public List<String> getCategoryWithIdWiki(@PathVariable("idWiki") String idWiki) {

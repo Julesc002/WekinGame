@@ -100,4 +100,8 @@ public class WikiRepository {
             return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public static String getNomWiki(int idWiki) {
+        return WikiRepository.getWikiById(idWiki).getString("nom");
+    }
 }

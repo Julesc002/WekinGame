@@ -16,11 +16,13 @@ import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.UpdateResult;
+import com.wekinGame.Model.Entry;
 
 public class EntryRepository {
 
     private static MongoDatabase database = DatabaseRepository.getDatabase();
     private static MongoCollection<Document> collection = database.getCollection("entrees");
+    Entry entry;
 
     public static List<Document> getEntriesByIdWiki(int id){
         Document searchQuery = new Document();
@@ -79,5 +81,39 @@ public class EntryRepository {
             e.printStackTrace();
             return "500";
         }
+    }
+
+    public static Document getEntry(int idEntry){
+        Document entry = getEntryById(idEntry);
+        String nomWiki = WikiRepository.getNomWiki(entry.getInteger("id_wiki"));
+        entry.put("nom_wiki", nomWiki);
+        
+        return entry;
+    }
+
+    private static Document getEntryById(int idEntry) {
+        Document searchQuery = new Document();
+        searchQuery.put("_id", idEntry);
+        Document entry = collection.find(searchQuery).first();
+        return entry;
+    }
+
+    public static List<Document> searchEntry(List<Document> results,String data){
+        Document searchQuery = new Document();
+        searchQuery.put("nom", new Document("$regex", data).append("$options", "i"));
+        List<Bson> pipeline = Arrays.asList(
+            Aggregates.match(searchQuery),
+            Aggregates.lookup("wikis", "id_wiki", "_id", "wiki"),
+            Aggregates.unwind("$wiki"),
+            Aggregates.project(Projections.fields(
+            Projections.include("_id", "nom", "categories", "wiki.nom", "wiki._id")
+        )));
+        AggregateIterable<Document> cursor = collection.aggregate(pipeline);
+        try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
+            while (cursorIterator.hasNext()) {
+                results.add(cursorIterator.next());
+            }
+        }
+        return results;
     }
 }
