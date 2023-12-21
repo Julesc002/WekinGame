@@ -1,47 +1,26 @@
 package com.wekinGame.Controllers;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
 import com.wekinGame.Repository.EntryRepository;
 import com.wekinGame.Repository.WikiRepository;
 
 @RestController
 public class WikiController {
-    private WikiRepository repository;
-    private EntryRepository entryRepository;
 
     @GetMapping("/wiki/{id}")
     public Document getWikiById(@PathVariable("id") String id) {
-        return repository.getWikiById(Integer.parseInt(id));
+        return WikiRepository.getWikiById(Integer.parseInt(id));
     }
 
     @GetMapping("/search/wiki")
@@ -56,7 +35,7 @@ public class WikiController {
 
     private List<Document> searchWikisByPrefix(String gameNamePrefix) {
         if (gameNamePrefix.length() != 0) {
-            return repository.getWikisByNamePrefix(gameNamePrefix);
+            return WikiRepository.getWikisByNamePrefix(gameNamePrefix);
         } else {
             return new ArrayList<>();
         }
@@ -95,7 +74,7 @@ public class WikiController {
         final Document wiki,
         final String idUser
     ) {
-        List<Document> entries = entryRepository.getEntriesByIdWiki((int) wiki.get("_id"));
+        List<Document> entries = EntryRepository.getEntriesByIdWiki((int) wiki.get("_id"));
         Map<String, List<Document>> categorizedEntries = new HashMap<>();
         for (Document entry : entries) {
             List<String> entryCategories = (List<String>) entry.get("categories");
@@ -132,7 +111,7 @@ public class WikiController {
             }
         }
         return categories;
-    }
+    } /*
 
     @GetMapping("/wikis")
     public List<Document> getAllWikis() {
@@ -185,28 +164,12 @@ public class WikiController {
                 .sort(Sorts.descending("_id"))
                 .into(new ArrayList<>());
         return (Integer) sortedEntries.get(0).get("_id");
-    }
+    } */
     
     @GetMapping("wiki/{id}/admin")
     public List<Document> getAdmins(@PathVariable String id){
-        List<Document> results = new ArrayList<>();
-        List<Bson> pipeline = Arrays.asList(
-            Aggregates.match(new Document("_id",Integer.parseInt(id))),
-            Aggregates.lookup("users","admins","_id","adminsdata"),
-            Aggregates.unwind("$adminsdata"),
-            Aggregates.project(Projections.fields(
-                Projections.include("adminsdata.pseudo", "adminsdata._id")
-            ))
-        );
-        MongoCollection<Document> collection = database.getCollection("wikis");
-        AggregateIterable<Document> cursor = collection.aggregate(pipeline);
-        try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
-            while (cursorIterator.hasNext()) {
-                results.add(cursorIterator.next());
-            }
-        }
-        return results;
-    }
+        return WikiRepository.getAdminsByWikiId(Integer.parseInt(id));
+    } /*
 
     @PutMapping("/wiki/{id}/admin/add")
     public ResponseEntity<String> addAdminOnWikis(@RequestBody Map<String,String> admin , @PathVariable String id) {
@@ -279,5 +242,5 @@ public class WikiController {
             e.printStackTrace();
             return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    } */
 }

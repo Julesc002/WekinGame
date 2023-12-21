@@ -20,6 +20,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
+import com.wekinGame.Repository.UserRepository;
 import com.wekinGame.ressources.Hasher;
 import com.wekinGame.ressources.JavaMail;
 import com.wekinGame.ressources.idGenerator;
@@ -76,13 +77,8 @@ public class UserController{
 
     @GetMapping("/user/{id}/info")
     public Document getAccountInfo(@PathVariable int id){
+        Document accountInfo = UserRepository.getUserInfoById(id);
         try{
-            Document queryParameter=new Document("_id",id);
-            MongoCollection<Document> collectionEntrees = database.getCollection("users");
-
-            Document accountInfo = (Document) collectionEntrees.find(queryParameter)
-                .projection(new Document("pseudo",1).append("date_naissance",1))
-                .first();
             if (accountInfo != null) {
                 return accountInfo;
             } else {
