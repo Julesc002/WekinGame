@@ -74,7 +74,7 @@ public class WikiController {
         final Document wiki,
         final String idUser
     ) {
-        List<Document> entries = EntryRepository.getEntriesByIdWiki((int) wiki.get("_id"));
+        List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
         Map<String, List<Document>> categorizedEntries = new HashMap<>();
         for (Document entry : entries) {
             List<String> entryCategories = (List<String>) entry.get("categories");
@@ -85,13 +85,13 @@ public class WikiController {
                 categorizedEntries.get(category).add(entry);
             }
         }
-        if (isAdmin((String) wiki.get("_id"), idUser)) {
+        if (isAdmin(wiki.getInteger("_id"), idUser)) {
             categorizedEntries = addCategoriesWithoutEntry(wiki, categorizedEntries);
         }
         return categorizedEntries.entrySet();
     }
 
-    private boolean isAdmin(final String idWiki, final String idUser) {
+    private boolean isAdmin(final int idWiki, final String idUser) {
         for (Document admin : getAdmins(idWiki)) {
             if (admin.get("adminsdata._id") == idUser) {
                 return true;
@@ -167,8 +167,8 @@ public class WikiController {
     } */
     
     @GetMapping("wiki/{id}/admin")
-    public List<Document> getAdmins(@PathVariable String id){
-        return WikiRepository.getAdminsByWikiId(Integer.parseInt(id));
+    public List<Document> getAdmins(@PathVariable int id){
+        return WikiRepository.getAdminsByWikiId(id);
     } /*
 
     @PutMapping("/wiki/{id}/admin/add")
