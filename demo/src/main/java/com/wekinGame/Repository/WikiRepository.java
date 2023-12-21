@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 
@@ -40,6 +44,26 @@ public class WikiRepository {
             }
         }
         return wikis;
+    }
+
+    public static List<Document> getAdminsByWikiId(int id) {
+        List<Document> results = new ArrayList<>();
+        List<Bson> pipeline = Arrays.asList(
+            Aggregates.match(new Document("_id", id)),
+            Aggregates.lookup("users","admins","_id","adminsdata"),
+            Aggregates.unwind("$adminsdata"),
+            Aggregates.project(Projections.fields(
+                Projections.include("adminsdata.pseudo", "adminsdata._id")
+            ))
+        );
+        MongoCollection<Document> collection = database.getCollection("wikis");
+        AggregateIterable<Document> cursor = collection.aggregate(pipeline);
+        try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
+            while (cursorIterator.hasNext()) {
+                results.add(cursorIterator.next());
+            }
+        }
+        return results;
     }
 
     public static Map<String,String> addCategory(int id,Map<String,String> request){

@@ -28,7 +28,7 @@ public class CategoryController {
     public List<Document> getEntryNameWithWikiIdAndCategoryName(
         @PathVariable("idWiki") String idWiki,
         @PathVariable("nameCategory") String nameCategory
-        ) {
+    ) {
         return EntryRepository.getEntryByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
