@@ -71,7 +71,7 @@ public class EntryRepository {
     try{
         Document searchQuery = new Document("$and", Arrays.asList(
             Filters.eq("id_wiki", idWiki),
-            Filters.eq("categories", oldStringCategory))); 
+            Filters.eq("categories", oldStringCategory)));
         UpdateResult result = collection.updateMany(searchQuery,setQuery);
         if (result.getModifiedCount() == 0) {
             return "404";

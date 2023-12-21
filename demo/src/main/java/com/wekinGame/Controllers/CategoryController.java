@@ -21,7 +21,7 @@ public class CategoryController {
 
     @GetMapping("/category/{idWiki}")
     public List<String> getCategoryWithIdWiki(@PathVariable("idWiki") String idWiki) {
-        return (List<String>) WikiRepository.getWikiById(Integer.parseInt(idWiki)).get("categories");
+        return (List<String>) WikiRepository.getById(Integer.parseInt(idWiki)).get("categories");
     }
     
     @GetMapping("/category/{idWiki}/{nameCategory}")
