@@ -3,12 +3,9 @@ package com.wekinGame.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
@@ -40,9 +37,9 @@ public class WikiRepository {
         return results;
     }
 
-    public static Document getById(final int id) {
+    public static Document getById(final int idWiki) {
         Document searchQuery = new Document();
-        searchQuery.put("_id", id);
+        searchQuery.put("_id", idWiki);
         return collection.find(searchQuery).first();
     }
 
@@ -63,10 +60,10 @@ public class WikiRepository {
         return wikis;
     }
 
-    public static List<Document> getAdminsByWikiId(final int id) {
+    public static List<Document> getAdminsByWikiId(final int idWiki) {
         List<Document> results = new ArrayList<>();
         List<Bson> pipeline = Arrays.asList(
-            Aggregates.match(new Document("_id", id)),
+            Aggregates.match(new Document("_id", idWiki)),
             Aggregates.lookup("users","admins","_id","adminsdata"),
             Aggregates.unwind("$adminsdata"),
             Aggregates.project(Projections.fields(
@@ -94,15 +91,15 @@ public class WikiRepository {
     }
 
     public static void addCategory(
-        final int id,
+        final int idWiki,
         final Document wiki
     ){
         Document searchQuery = new Document();
-        searchQuery.put("_id", id);
+        searchQuery.put("_id", idWiki);
         collection.replaceOne(searchQuery, wiki);
     }
 
-    public static void getDeleteCategory(
+    public static void deleteCategory(
         final int idWiki,
         final String nameCategory
     ){
@@ -135,14 +132,14 @@ public class WikiRepository {
     }
 
     public static String modifyCategoryNameForWikis(
-        final String oldStringCategory,
+        final String oldNameCategory,
         final int idWiki,
         final Document setQuery
     ) {
         try {
             Document searchQuery = new Document("$and", Arrays.asList(
             Filters.eq("_id", idWiki),
-            Filters.eq("categories", oldStringCategory)));
+            Filters.eq("categories", oldNameCategory)));
             UpdateResult result = collection.updateOne(searchQuery,setQuery);
             if (result.getModifiedCount() == 0) {
                 return "404";
@@ -151,26 +148,6 @@ public class WikiRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return "500";
-        }
-    }
-
-    public static ResponseEntity<String> ModifyCategoryName(
-        final Map<String, Object> oldStringCategory,
-        final String newCategory
-    ){
-        Document setQuery = new Document("$set", new Document("categories.$", newCategory));
-        String resultWikis = WikiRepository.modifyCategoryNameForWikis(
-            (String) oldStringCategory.get("categories"),
-            (Integer) oldStringCategory.get("id"), setQuery);
-        String resultEntries = EntryRepository.modifyCategoriesNameForEntries(
-            (String) oldStringCategory.get("categories"),
-            (Integer) oldStringCategory.get("id"), setQuery);
-        if (resultEntries.equals("404") && resultWikis.equals("404")) {
-            return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
-        } else if (resultEntries.equals("200") && resultWikis.equals("200")) {
-            return new ResponseEntity<>("200 OK", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

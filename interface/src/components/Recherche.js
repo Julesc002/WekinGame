@@ -27,13 +27,13 @@ function RechercheDeWiki() {
   };
 
   const rechercheEntreeAPI = (query) => {
-    axios.get(`${API_URL}/searchEntry?name=` + query).then((res) => {
+    axios.get(`${API_URL}/searchEntry?nom=` + query).then((res) => {
       setEntrees(res.data);
     });
   };
 
   const rechercheMentionAPI = (query) => {
-    axios.get(`${API_URL}/searchEntryByDesc?name=` + query).then((res) => {
+    axios.get(`${API_URL}/searchEntryByDescription?donnees=` + query).then((res) => {
       setMentions(res.data);
     });
   };

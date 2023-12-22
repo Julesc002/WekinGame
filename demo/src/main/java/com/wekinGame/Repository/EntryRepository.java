@@ -38,8 +38,8 @@ public class EntryRepository {
         return entries;
     }
 
-    public static List<Document> getEntryByWikiAndCategory(final int id_wiki,final String nameCategory){
-        List<Document> entry = new ArrayList<Document>();
+    public static List<Document> getEntriesByWikiAndCategory(final int id_wiki,final String nameCategory){
+        List<Document> entries = new ArrayList<Document>();
             Document searchQuery = new Document();
             searchQuery.put("id_wiki", id_wiki);
             searchQuery.put("categories", nameCategory);
@@ -50,10 +50,10 @@ public class EntryRepository {
             AggregateIterable<Document> cursor = collection.aggregate(pipeline);
             try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
                 while (cursorIterator.hasNext()) {
-                    entry.add(cursorIterator.next());
+                    entries.add(cursorIterator.next());
                 }
             }
-            return entry;
+            return entries;
     }
 
     public static void removeCategoryFromWikiEntries(final Integer idWiki,final String category) {
@@ -99,7 +99,7 @@ public class EntryRepository {
         return entry;
     }
 
-    public static List<Document> searchEntry(final List<Document> results,final String data){
+    public static List<Document> searchEntryByName(final List<Document> results,final String data){
         Document searchQuery = new Document();
         searchQuery.put("nom", new Document("$regex", data).append("$options", "i"));
         List<Bson> pipeline = Arrays.asList(

@@ -26,17 +26,17 @@ public class EntryController {
     }
     
     @GetMapping("/searchEntry")
-    public List<Document> searchEntry(@RequestParam(value = "name", defaultValue = "")final String data) {
+    public List<Document> searchEntriesByName(@RequestParam(value = "nom", defaultValue = "")final String nom) {
         List<Document> results = new ArrayList<Document>();
-        if (data.length() == 0) {
+        if (nom.length() == 0) {
             return results;
         } else {
-            return EntryRepository.searchEntry(results,data);
+            return EntryRepository.searchEntryByName(results,nom);
         }
     }
 
-    @GetMapping("/searchEntryByDesc")
-    public List<Document> searchEntryByDesc(@RequestParam(value = "name", defaultValue = "") final String donnees) {
+    @GetMapping("/searchEntryByDescription")
+    public List<Document> searchEntriesByDescription(@RequestParam(value = "donnees", defaultValue = "") final String donnees) {
         List<Document> results = new ArrayList<Document>();
         if(donnees.length() != 0){
             results = EntryRepository.searchEntryByDesc(results, donnees);
@@ -47,8 +47,10 @@ public class EntryController {
     @PostMapping("/create/entry")
     public ResponseEntity<String> createEntry(@RequestBody final Entry entry) {
         try {
-            if (entry.getCategories().size() == 0 && entry.getDonnees().size() == 0 && entry.getId_wiki() < 0
-                    && entry.getNom() == null) {
+            if (entry.getCategories().size() == 0
+            && entry.getDonnees().size() == 0
+            && entry.getId_wiki() < 0
+            && entry.getNom() == null) {
                 return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
             }
             List<Document> donnees = new ArrayList<Document>();
@@ -71,15 +73,17 @@ public class EntryController {
     }
 
     @GetMapping("/delete/entry/{_id}")
-    public void deleteEntry(@PathVariable final String _id) {
-        EntryRepository.deleteEntry(Integer.parseInt(_id));
+    public void deleteEntry(@PathVariable final String idEntry) {
+        EntryRepository.deleteEntry(Integer.parseInt(idEntry));
     }
     
     @PutMapping("/modify/entry/{_id}")
-    public ResponseEntity<String> modifyEntry(@RequestBody final Entry entry, @PathVariable final String _id) {
+    public ResponseEntity<String> modifyEntry(@RequestBody final Entry entry, @PathVariable final String idEntry) {
         try {
-            if (entry.getCategories().size() == 0 && entry.getDonnees().size() == 0 && entry.getId_wiki() < 0
-                    && entry.getNom() == null) {
+            if (entry.getCategories().size() == 0
+            && entry.getDonnees().size() == 0
+            && entry.getId_wiki() < 0
+            && entry.getNom() == null) {
                 return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
             }
             List<Document> donnees = new ArrayList<Document>();
@@ -88,12 +92,12 @@ public class EntryController {
                         .append("titre", entry.getDonnees().get(i).getTitre())
                         .append("contenu", entry.getDonnees().get(i).getContenu()));
             }
-            Document modifyEntry = new Document("$set", new Document()
+            Document modifiedEntry = new Document("$set", new Document()
                     .append("nom", entry.getNom())
                     .append("id_wiki", entry.getId_wiki())
                     .append("categories", entry.getCategories())
                     .append("donnees", donnees));
-            return EntryRepository.modifyEntry(Integer.parseInt(_id), modifyEntry);
+            return EntryRepository.modifyEntry(Integer.parseInt(idEntry), modifiedEntry);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);

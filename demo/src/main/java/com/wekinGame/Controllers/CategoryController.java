@@ -26,18 +26,18 @@ public class CategoryController {
     }
     
     @GetMapping("/category/{idWiki}/{nameCategory}")
-    public List<Document> getEntryNameWithWikiIdAndCategoryName(
+    public List<Document> getEntriesNameWithWikiIdAndCategoryName(
         @PathVariable("idWiki")final String idWiki,
         @PathVariable("nameCategory")final String nameCategory
     ) {
-        return EntryRepository.getEntryByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
+        return EntryRepository.getEntriesByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
     @PatchMapping("/wiki/{id}/category/create")
-    public Map<String, String> createCategory(@PathVariable("id")final String idWiki, @RequestBody final Map<String, String> request) {
+    public Map<String, String> addCategory(@PathVariable("id")final String idWiki, @RequestBody final Map<String, String> newCategory) {
         try{
             Document wiki = WikiRepository.getById(Integer.parseInt(idWiki));
-            String nameNewCategory = request.get("nom");
+            String nameNewCategory = newCategory.get("nom");
             List<String> wikiCategories = (List<String>) wiki.get("categories");
             Map<String, String> response = new HashMap<>();
             if (!wikiCategories.contains(nameNewCategory)) {
@@ -58,11 +58,11 @@ public class CategoryController {
     }
     
     @PatchMapping("/wiki/{idWiki}/{nameCategory}/delete")
-    public void getDeleteCategory(
+    public void deleteCategory(
         @PathVariable("idWiki")final String idWiki,
         @PathVariable("nameCategory")final String nameCategory
         ) {
-        WikiRepository.getDeleteCategory(Integer.parseInt(idWiki), nameCategory);
+        WikiRepository.deleteCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
 
