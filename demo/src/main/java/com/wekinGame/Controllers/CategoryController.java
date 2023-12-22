@@ -27,14 +27,17 @@ public class CategoryController {
     
     @GetMapping("/category/{idWiki}/{nameCategory}")
     public List<Document> getEntriesNameWithWikiIdAndCategoryName(
-        @PathVariable("idWiki")final String idWiki,
-        @PathVariable("nameCategory")final String nameCategory
+        final @PathVariable("idWiki") String idWiki,
+        final @PathVariable("nameCategory") String nameCategory
     ) {
         return EntryRepository.getEntriesByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
     @PatchMapping("/wiki/{id}/category/create")
-    public Map<String, String> addCategory(@PathVariable("id")final String idWiki, @RequestBody final Map<String, String> newCategory) {
+    public Map<String, String> addCategory(
+        final @PathVariable("id") String idWiki,
+        final @RequestBody Map<String, String> newCategory
+    ) {
         try{
             Document wiki = WikiRepository.getById(Integer.parseInt(idWiki));
             String nameNewCategory = newCategory.get("nom");
@@ -59,18 +62,18 @@ public class CategoryController {
     
     @PatchMapping("/wiki/{idWiki}/{nameCategory}/delete")
     public void deleteCategory(
-        @PathVariable("idWiki")final String idWiki,
-        @PathVariable("nameCategory")final String nameCategory
-        ) {
+        final @PathVariable("idWiki") String idWiki,
+        final @PathVariable("nameCategory") String nameCategory
+    ) {
         WikiRepository.deleteCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
 
     @PutMapping("/modify/category/{newCategory}")
     public ResponseEntity<String> modifyCategoryName(
-        @RequestBody final Map<String, Object> oldCategoryName,
-        @PathVariable final String newCategoryName
-        ) {
+        final @RequestBody Map<String, Object> oldCategoryName,
+        final @PathVariable String newCategoryName
+    ) {
         if (newCategoryName.isEmpty() && oldCategoryName.isEmpty()) {
             return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
         }else{

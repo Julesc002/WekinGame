@@ -21,12 +21,14 @@ import com.wekinGame.Repository.EntryRepository;
 public class EntryController {
 
     @GetMapping("/entry/{idEntry}")
-    public Document getEntry(@PathVariable("idEntry")final String idEntry) {
+    public Document getEntry(final @PathVariable("idEntry") String idEntry) {
         return EntryRepository.getEntry(Integer.parseInt(idEntry));
     }
     
     @GetMapping("/searchEntry")
-    public List<Document> searchEntriesByName(@RequestParam(value = "nom", defaultValue = "")final String nom) {
+    public List<Document> searchEntriesByName(
+        final @RequestParam(value = "nom", defaultValue = "") String nom
+    ) {
         List<Document> results = new ArrayList<Document>();
         if (nom.length() == 0) {
             return results;
@@ -36,7 +38,9 @@ public class EntryController {
     }
 
     @GetMapping("/searchEntryByDescription")
-    public List<Document> searchEntriesByDescription(@RequestParam(value = "donnees", defaultValue = "") final String donnees) {
+    public List<Document> searchEntriesByDescription(
+        final @RequestParam(value = "donnees", defaultValue = "") String donnees
+    ) {
         List<Document> results = new ArrayList<Document>();
         if(donnees.length() != 0){
             results = EntryRepository.searchEntryByDesc(results, donnees);
@@ -45,7 +49,7 @@ public class EntryController {
     }
 
     @PostMapping("/create/entry")
-    public ResponseEntity<String> createEntry(@RequestBody final Entry entry) {
+    public ResponseEntity<String> createEntry(final @RequestBody Entry entry) {
         try {
             if (entry.getCategories().size() == 0
             && entry.getDonnees().size() == 0
@@ -73,12 +77,15 @@ public class EntryController {
     }
 
     @GetMapping("/delete/entry/{_id}")
-    public void deleteEntry(@PathVariable final String idEntry) {
+    public void deleteEntry(final @PathVariable String idEntry) {
         EntryRepository.deleteEntry(Integer.parseInt(idEntry));
     }
     
     @PutMapping("/modify/entry/{_id}")
-    public ResponseEntity<String> modifyEntry(@RequestBody final Entry entry, @PathVariable final String idEntry) {
+    public ResponseEntity<String> modifyEntry(
+        final @RequestBody Entry entry,
+        final @PathVariable String idEntry
+    ) {
         try {
             if (entry.getCategories().size() == 0
             && entry.getDonnees().size() == 0

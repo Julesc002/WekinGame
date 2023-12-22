@@ -32,12 +32,14 @@ public class WikiController {
     }
 
     @GetMapping("/wiki/{id}")
-    public Document getWikiById(@PathVariable("id") final String id) {
+    public Document getWikiById(final @PathVariable("id") String id) {
         return WikiRepository.getById(Integer.parseInt(id));
     }
 
     @GetMapping("/search/wiki")
-    public List<Document> getTenWikisByPrefix(@RequestParam(value = "game") final String gameNamePrefix) {
+    public List<Document> getTenWikisByPrefix(
+        final @RequestParam(value = "game") String gameNamePrefix
+    ) {
         int desiredAmount = 10;
         List<Document> results = searchWikisByPrefix(gameNamePrefix);
         if (results.size() > desiredAmount) {
@@ -88,7 +90,7 @@ public class WikiController {
     }
     
     @GetMapping("wiki/{id}/admin")
-    public List<Document> getAdmins(@PathVariable int id){
+    public List<Document> getAdmins(final @PathVariable int id){
         return WikiRepository.getAdminsByWikiId(id);
     }
 
@@ -193,7 +195,10 @@ public class WikiController {
         return categories;
     }
 
-    private int verifyParametersAndGetIdAdmin(Map<String,String> admin, String id) throws Exception {
+    private int verifyParametersAndGetIdAdmin(
+        final Map<String,String> admin,
+        final String id
+    ) throws Exception {
         String pseudo = admin.get("pseudo");
         if (pseudo.isEmpty() && id.isEmpty()) {
             throw new Exception("400 bad request");

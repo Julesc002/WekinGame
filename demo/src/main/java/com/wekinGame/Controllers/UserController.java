@@ -43,7 +43,7 @@ public class UserController{
     }
 
     @GetMapping("/user/{id}/delete")
-    public Document DeleteUser(@PathVariable int id){
+    public Document DeleteUser(final @PathVariable int id){
         if(UserRepository.exist(id)){
             UserRepository.delete(id);
             return new Document("msg","deletion complete");
@@ -52,7 +52,7 @@ public class UserController{
     }
 
     @GetMapping("/user/{id}/info")
-    public Document getAccountInfo(@PathVariable int id){
+    public Document getAccountInfo(final @PathVariable int id){
         Document accountInfo = UserRepository.getUserInfoById(id);
         try{
             if (accountInfo != null) {
@@ -67,7 +67,7 @@ public class UserController{
     }
 
     @PostMapping("/user/connect")
-    public Document connectAccount(@RequestBody Map<String,String> param){
+    public Document connectAccount(final @RequestBody Map<String,String> param){
         Document result = UserRepository.getFromPseudoAndPassword(param.get("pseudo"), param.get("password"));
         if(result == null){
             return new Document("_id",-1);
