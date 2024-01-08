@@ -82,6 +82,10 @@ function WikiContent() {
                     <button style={{ cursor: 'pointer' }}>Gérer les Administrateurs</button>
                     </Link>
                     <br/>
+                </div>
+            )}
+            {isUserAdmin() && (
+                <div>
                     <h3>Ajouter une catégorie :</h3>
                     <AjoutCategorie />
                     <Link to={`/wiki/${wiki?._id || ""}/ajoutEntree`}>
