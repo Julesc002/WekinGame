@@ -61,6 +61,7 @@ public class WikiController {
         result.put("nom", wiki.getString("nom"));
         result.put("date_creation", wiki.getString("date_creation"));
         result.put("description", wiki.getString("description"));
+        result.put("owner", wiki.get("owner"));
         result.put("admins", wiki.get("admins"));
         result.put("categories", categoriesWithEntries);
         return result;
@@ -78,6 +79,7 @@ public class WikiController {
             Document newWiki = new Document("_id", id)
                 .append("nom", newWikiData.get("nom"))
                 .append("description", newWikiData.get("description"))
+                .append("owner", Integer.valueOf(newWikiData.get("adminId")))
                 .append("admins", admins)
                 .append("categories", categories)
                 .append("date_creation", date);
@@ -88,6 +90,7 @@ public class WikiController {
             return new Document("error", 500);
         }
     }
+<<<<<<< demo/src/main/java/com/wekinGame/Controllers/WikiController.java
     
     @GetMapping("wiki/{id}/admin")
     public List<Document> getAdmins(final @PathVariable int id){
@@ -104,6 +107,61 @@ public class WikiController {
             UpdateResult result = WikiRepository.addAdminToWiki(idAdmin, Integer.parseInt(idWiki));
             if (result.getModifiedCount() == 0) {
                 return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+=======
+
+    public Integer getIdMax() {
+
+        MongoCollection<Document> collectionEntrees = database.getCollection("wikis");
+
+        List<Document> sortedEntries = collectionEntrees.find()
+                .projection(new Document("_id", 1))
+                .sort(Sorts.descending("_id"))
+                .into(new ArrayList<>());
+        return (Integer) sortedEntries.get(0).get("_id");
+
+    }
+
+    @GetMapping("wiki/{id}/admin")
+    public List<Document> GetAdmins(@PathVariable String id) {
+        List<Document> results = new ArrayList<>();
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(new Document("_id", Integer.parseInt(id))),
+                Aggregates.lookup("users", "admins", "_id", "adminsdata"),
+                Aggregates.unwind("$adminsdata"),
+                Aggregates.project(Projections.fields(
+                        Projections.include("adminsdata.pseudo", "adminsdata._id"))));
+        MongoCollection<Document> collection = database.getCollection("wikis");
+        AggregateIterable<Document> cursor = collection.aggregate(pipeline);
+        try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
+            while (cursorIterator.hasNext()) {
+                results.add(cursorIterator.next());
+            }
+        }
+        return results;
+    }
+
+    @PutMapping("/wiki/{id}/admin/add")
+    public ResponseEntity<String> addAdminOnWikis(@RequestBody Map<String, String> admin, @PathVariable String id) {
+        try {
+            if (admin.get("pseudo").isEmpty() && id.isEmpty()) {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+            }
+
+            int idAdmin = getIdAdminByNom(admin.get("pseudo"));
+            if (idAdmin == 400) {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+            } else if (idAdmin == 500) {
+                return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                MongoCollection<Document> collection = database.getCollection("wikis");
+                Document setQuery = new Document("$addToSet", new Document("admins", idAdmin));
+
+                UpdateResult result = collection.updateOne(Filters.eq("_id", Integer.parseInt((id))), setQuery);
+                if (result.getModifiedCount() == 0) {
+                    return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+                }
+                return new ResponseEntity<>("200 OK", HttpStatus.OK);
+>>>>>>> demo/src/main/java/com/wekinGame/Controllers/WikiController.java
             }
             return new ResponseEntity<>("200 OK", HttpStatus.OK);
         } catch (Exception e) {
@@ -112,6 +170,7 @@ public class WikiController {
         }
     }
 
+<<<<<<< demo/src/main/java/com/wekinGame/Controllers/WikiController.java
     @PutMapping("/wiki/{id}/admin/delete")
     public ResponseEntity<String> removeAdmin(
         final @RequestBody Map<String,String> admin,
@@ -126,6 +185,14 @@ public class WikiController {
             return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+=======
+    private Integer getIdAdminByNom(String pseudo) {
+        try {
+            if (pseudo.isEmpty()) {
+                return 400;
+            }
+            Document searchQuery = new Document("pseudo", pseudo);
+>>>>>>> demo/src/main/java/com/wekinGame/Controllers/WikiController.java
 
     private List<Document> searchWikisByPrefix(final String gameNamePrefix) {
         if (gameNamePrefix.length() != 0) {
@@ -163,6 +230,15 @@ public class WikiController {
                 }
                 categorizedEntries.get(category).add(entry);
             }
+<<<<<<< demo/src/main/java/com/wekinGame/Controllers/WikiController.java
+=======
+
+            return (Integer) resultsQuery.get("_id");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 500;
+>>>>>>> demo/src/main/java/com/wekinGame/Controllers/WikiController.java
         }
         if (isAdmin(wiki.getInteger("_id"), idUser)) {
             categorizedEntries = addCategoriesWithoutEntry(wiki, categorizedEntries);
@@ -170,6 +246,7 @@ public class WikiController {
         return categorizedEntries.entrySet();
     }
 
+<<<<<<< demo/src/main/java/com/wekinGame/Controllers/WikiController.java
     private boolean isAdmin(
         final int idWiki,
         final String idUser
@@ -177,11 +254,19 @@ public class WikiController {
         for (Document admin : getAdmins(idWiki)) {
             if (admin.get("adminsdata._id") == idUser) {
                 return true;
+=======
+    @PutMapping("/wiki/{id}/admin/delete")
+    public ResponseEntity<String> deleteEntry(@RequestBody Map<String, String> admin, @PathVariable String id) {
+        try {
+            if (admin.get("pseudo").isEmpty() && id.isEmpty()) {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+>>>>>>> demo/src/main/java/com/wekinGame/Controllers/WikiController.java
             }
         }
         return false;
     }
 
+<<<<<<< demo/src/main/java/com/wekinGame/Controllers/WikiController.java
     private Map<String, List<Document>> addCategoriesWithoutEntry(
         final Document wiki,
         final Map<String, List<Document>> categoriesWithEntryOnly
@@ -190,6 +275,18 @@ public class WikiController {
         for (String category : (List<String>) wiki.get("categories")) {
             if (!categoriesWithEntryOnly.containsKey(category)) {
                 categories.put(category, new ArrayList<>());
+=======
+            int idAdmin = getIdAdminByNom(admin.get("pseudo"));
+            if (idAdmin == 400) {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+            } else if (idAdmin == 500) {
+                return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                MongoCollection<Document> collection = database.getCollection("wikis");
+                collection.updateOne(Filters.eq("_id", Integer.parseInt(id)), Updates.pull("admins", idAdmin));
+
+                return new ResponseEntity<>("200 OK", HttpStatus.OK);
+>>>>>>> demo/src/main/java/com/wekinGame/Controllers/WikiController.java
             }
         }
         return categories;

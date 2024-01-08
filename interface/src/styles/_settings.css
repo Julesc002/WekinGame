@@ -69,6 +69,16 @@ ul{
   list-style: none;
 }
 
+.wmde-markdown{
+  background-color: var(--darkest-color);
+  z-index: 1;
+}
+.wmde-markdown-var
+.w-md-editor
+.w-md-editor-show-live{
+  z-index: 1;
+}
+
 /* Scrollbar management */
 ::-webkit-scrollbar {
     width: 0.3vw;
