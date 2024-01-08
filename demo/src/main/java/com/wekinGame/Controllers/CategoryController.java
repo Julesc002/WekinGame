@@ -21,7 +21,7 @@ import com.wekinGame.Repository.WikiRepository;
 public class CategoryController {
 
     @GetMapping("/category/{idWiki}")
-    public List<String> getCategoryWithIdWiki(@PathVariable("idWiki") String idWiki) {
+    public List<String> getCategoriesWithIdWiki(@PathVariable("idWiki") String idWiki) {
         return (List<String>) WikiRepository.getById(Integer.parseInt(idWiki)).get("categories");
     }
     
