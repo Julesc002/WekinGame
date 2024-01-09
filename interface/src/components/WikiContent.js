@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
 import AjoutCategorie from "./AjoutCategorie";
+import BackgroundWiki from "./BackgroundWiki";
 
 function WikiContent() {
     const { id } = useParams();
@@ -15,18 +16,6 @@ function WikiContent() {
 
     useEffect(() => {
         searchDataWiki(id);
-
-        axios.get(`${API_URL}/wiki/${id}/background`).then((res) => {
-            console.log(res.data);
-        }).catch((error) => {
-            console.error(error);
-        });
-        
-        document.body.style.backgroundImage = 'url("https://fastncurious.fr/wp-content/uploads/2012/03/mcdo-1.jpg")';
-
-        return () => {
-            document.body.style.backgroundImage = 'none';
-        };
     }, [id]);
 
     const searchDataWiki = (id) => {
@@ -90,6 +79,7 @@ function WikiContent() {
 
     return (
         <div className="contenuWiki">
+            <BackgroundWiki id={id}/>
             <h2>Wiki {wiki?.nom || ""}</h2>
             <p>{wiki?.description || ""}</p>
             {isUserOwner() && (

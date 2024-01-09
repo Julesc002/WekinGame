@@ -1,8 +1,9 @@
+import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
-import MDEditor from "@uiw/react-md-editor";
+import BackgroundWiki from "./BackgroundWiki";
 
 function DetailEntree() {
     const { id } = useParams();
@@ -25,6 +26,7 @@ function DetailEntree() {
     };
     return (
         <div>
+            <BackgroundWiki id={entry.id_wiki} />
             {entry && entry._id && (
                 <div>
                     <h2 class="MainTitle">

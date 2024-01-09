@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
+import BackgroundWiki from "./BackgroundWiki";
 
 function DetailCategorie() {
     const { id, nom } = useParams();
@@ -16,7 +17,7 @@ function DetailCategorie() {
     useEffect(() => {
         searchDataCategorie(id);
         getWiki(id);
-    });
+    }, [id]);
 
     const searchDataCategorie = (id) => {
         axios.get(`${API_URL}/category/` + id + '/' + nom).then((res) => {
@@ -32,6 +33,7 @@ function DetailCategorie() {
 
     return (
         <div>
+            <BackgroundWiki id={id} />
             <h2 class="MainTitle">
                 Entrées de la catégorie {nom} du wiki&nbsp;
                 <Link to={`/wiki/${wiki ? wiki._id : ""}`}>
