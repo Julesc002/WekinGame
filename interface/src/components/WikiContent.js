@@ -16,6 +16,12 @@ function WikiContent() {
     useEffect(() => {
         searchDataWiki(id);
 
+        axios.get(`${API_URL}/wiki/${id}/background`).then((res) => {
+            console.log(res.data);
+        }).catch((error) => {
+            console.error(error);
+        });
+        
         document.body.style.backgroundImage = 'url("https://fastncurious.fr/wp-content/uploads/2012/03/mcdo-1.jpg")';
 
         return () => {
