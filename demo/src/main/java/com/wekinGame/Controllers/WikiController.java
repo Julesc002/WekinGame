@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mongodb.client.result.UpdateResult;
@@ -68,10 +67,11 @@ public class WikiController {
     }
 
     @GetMapping("/wiki/{idWiki}/background")
-    @ResponseBody
-    public String getUrlBackgroundWiki(@PathVariable("idWiki") final String idWiki) {
+    public Document getBackgroundImage(@PathVariable("idWiki") final String idWiki) {
         Document wiki = getWikiById(idWiki);
-        return (String) wiki.get("imageBackground");
+        Document image = new Document();
+        image.append("url", (String) wiki.get("imageBackground"));
+        return image;
     }
 
     @PostMapping("/wiki/create")

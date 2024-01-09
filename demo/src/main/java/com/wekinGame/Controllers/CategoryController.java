@@ -33,9 +33,9 @@ public class CategoryController {
         return EntryRepository.getEntriesByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
-    @PatchMapping("/wiki/{idWiki}/category/create")
+    @PatchMapping("/wiki/{id}/category/create")
     public Map<String, String> addCategory(
-        final @PathVariable("idWiki") String idWiki,
+        final @PathVariable("id") String idWiki,
         final @RequestBody Map<String, String> newCategory
     ) {
         try{
@@ -69,7 +69,7 @@ public class CategoryController {
     }
     
 
-    @PutMapping("/modify/category/{newCategoryName}")
+    @PutMapping("/modify/category/{newCategory}")
     public ResponseEntity<String> modifyCategoryName(
         final @RequestBody Map<String, Object> oldCategoryName,
         final @PathVariable String newCategoryName
@@ -80,17 +80,31 @@ public class CategoryController {
             Document setOldCategoryNameWithNew = new Document("$set", new Document("categories.$", newCategoryName));
             String resultModifyCategoryWikis = WikiRepository.modifyCategoryNameForWikis(
                 (String) oldCategoryName.get("categories"),
-                (Integer) oldCategoryName.get("id"), setOldCategoryNameWithNew);
+                (Integer) oldCategoryName.get("id"),
+                setOldCategoryNameWithNew
+            );
             String resultModifyCategoryEntries = EntryRepository.modifyCategoriesNameForEntries(
                 (String) oldCategoryName.get("categories"),
-                (Integer) oldCategoryName.get("id"), setOldCategoryNameWithNew);
-            if (resultModifyCategoryEntries.equals("404") && resultModifyCategoryWikis.equals("404")) {
-                return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
-            } else if (resultModifyCategoryEntries.equals("200") && resultModifyCategoryWikis.equals("200")) {
-                return new ResponseEntity<>("200 OK", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+                (Integer) oldCategoryName.get("id"),
+                setOldCategoryNameWithNew
+            );
+            return getResponseEntity(resultModifyCategoryWikis, resultModifyCategoryEntries);
+        }
+    }
+
+    private ResponseEntity<String> getResponseEntity(String resultModifyCategoryWikis, String resultModifyCategoryEntries) {
+        if (
+            resultModifyCategoryEntries.equals("404")
+            && resultModifyCategoryWikis.equals("404")
+        ) {
+            return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+        } else if (
+            resultModifyCategoryEntries.equals("200")
+            && resultModifyCategoryWikis.equals("200")
+        ) {
+            return new ResponseEntity<>("200 OK", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
