@@ -35,7 +35,7 @@ public class CategoryController {
     
     @PatchMapping("/wiki/{idWiki}/category/create")
     public Map<String, String> addCategory(
-        final @PathVariable("id") String idWiki,
+        final @PathVariable("idWiki") String idWiki,
         final @RequestBody Map<String, String> newCategory
     ) {
         try{
