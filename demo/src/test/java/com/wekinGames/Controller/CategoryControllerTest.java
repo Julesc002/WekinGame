@@ -52,9 +52,13 @@ public class CategoryControllerTest {
         // GIVEN
         String idWiki = "1";
         wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(null);
-        
+
         // THEN
         assertThrows(NullPointerException.class, () -> categoryController.getCategoriesWithIdWiki(idWiki));
     }
+
+    // TODO testGetEntriesByCategoryAndWiki
+
+    
 
 }
