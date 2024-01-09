@@ -82,6 +82,7 @@ public class WikiController {
                 .append("owner", Integer.valueOf(newWikiData.get("adminId")))
                 .append("admins", admins)
                 .append("categories", categories)
+                .append("imageBackground",newWikiData.get("imageBackground"))
                 .append("date_creation", date);
             WikiRepository.push(newWiki);
             return new Document("_id", id);
@@ -142,7 +143,7 @@ public class WikiController {
         final String idUser
     ) {
         List<Document> categories = new ArrayList<>();
-        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, idUser)) {
+        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, Integer.parseInt(idUser))) {
             Document category = new Document();
             category.put("nom", categoryWithEntries.getKey());
             category.put("entrees", categoryWithEntries.getValue());
@@ -153,7 +154,7 @@ public class WikiController {
 
     private Set<Map.Entry<String, List<Document>>> getCategoriesWithEntriesAsMap(
         final Document wiki,
-        final String idUser
+        final int idUser
     ) {
         List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
         Map<String, List<Document>> categorizedEntries = new HashMap<>();
@@ -174,10 +175,11 @@ public class WikiController {
 
     private boolean isAdmin(
         final int idWiki,
-        final String idUser
+        final int idUser
     ) {
         for (Document admin : getAdmins(idWiki)) {
-            if (admin.get("adminsdata._id") == idUser) {
+            Document adminData = (Document) admin.get("adminsdata");
+            if ((int) adminData.get("_id") == idUser) {
                 return true;
             }
         }
