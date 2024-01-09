@@ -96,7 +96,7 @@ public class WikiController {
         return WikiRepository.getAdminsByWikiId(id);
     }
 
-    @PutMapping("/wiki/{id}/admin/add")
+    @PutMapping("/wiki/{idWiki}/admin/add")
     public ResponseEntity<String> addAdminOnWikis(
             final @RequestBody Map<String, String> admin,
             final @PathVariable String idWiki) {
@@ -113,7 +113,7 @@ public class WikiController {
         }
     }
 
-    @PutMapping("/wiki/{id}/admin/delete")
+    @PutMapping("/wiki/{idWiki}/admin/delete")
     public ResponseEntity<String> removeAdmin(
             final @RequestBody Map<String, String> admin,
             final @PathVariable String idWiki) {

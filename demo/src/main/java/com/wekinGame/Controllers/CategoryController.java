@@ -33,7 +33,7 @@ public class CategoryController {
         return EntryRepository.getEntriesByWikiAndCategory(Integer.parseInt(idWiki), nameCategory);
     }
     
-    @PatchMapping("/wiki/{id}/category/create")
+    @PatchMapping("/wiki/{idWiki}/category/create")
     public Map<String, String> addCategory(
         final @PathVariable("id") String idWiki,
         final @RequestBody Map<String, String> newCategory
@@ -69,7 +69,7 @@ public class CategoryController {
     }
     
 
-    @PutMapping("/modify/category/{newCategory}")
+    @PutMapping("/modify/category/{newCategoryName}")
     public ResponseEntity<String> modifyCategoryName(
         final @RequestBody Map<String, Object> oldCategoryName,
         final @PathVariable String newCategoryName
