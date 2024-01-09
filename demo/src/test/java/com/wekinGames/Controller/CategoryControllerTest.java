@@ -23,11 +23,6 @@ public class CategoryControllerTest {
 
     @InjectMocks
 	CategoryController categoryController;
-
-	//@BeforeEach
-	//public void init() {
-	//	classUnderTest = new CalculatorServiceImpl(calculator, solutionFormatter);
-	//}
 	
     @Test
     public void testGetCategoriesWithIdWiki() {
@@ -44,6 +39,16 @@ public class CategoryControllerTest {
 
         // THEN
         assertEquals(expectedCategories, obtainedCategories);
+    }
+	
+    @Test
+    public void testGetCategoriesWithIdWikiCaseNoneFound() {
+        // GIVEN
+        String idWiki = "1";
+        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(null);
+
+        // THEN
+        assertThrows(NullPointerException.class, () -> categoryController.getCategoriesWithIdWiki(idWiki));
     }
 
 }
