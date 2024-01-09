@@ -6,8 +6,7 @@ import MDEditor from "@uiw/react-md-editor";
 
 function DetailEntree() {
     const { id } = useParams();
-    const { wikiid }=useParams();
-    const [entry, setEntry] = useState([]);
+    const [entry, setEntry] = useState({});
     const navigate = useNavigate();
 
     const handleRetourClick = () => {
@@ -20,30 +19,30 @@ function DetailEntree() {
 
     const searchDataEntry = (id) => {
         axios.get(`${API_URL}/entry/` + id).then((res) => {
+            console.log(res.data);
             setEntry(res.data);
         });
     };
-
     return (
         <div>
-            {entry && entry[0] && (
+            {entry && entry._id && (
                 <div>
                     <h2 class="MainTitle">
                         Entrées du wiki&nbsp;
-                        <Link to={`/wiki/${entry[0].id_wiki}`}>
-                            {entry[0].nom_wiki}
+                        <Link to={`/wiki/${entry.id_wiki}`}>
+                            {entry.nom_wiki}
                         </Link>
                         &nbsp;:
                     </h2>
-                    <h2>{entry[0].nom}</h2>
+                    <h2>{entry.nom}</h2>
                     <div class="append">
                         <h3>Catégories</h3>
-                        {entry[0].categories.map((categorie) => (
-                            <Link to={`/categorie/${entry[0].id_wiki}/${categorie}`}>
+                        {entry.categories.map((categorie) => (
+                            <Link to={`/categorie/${entry.id_wiki}/${categorie}`}>
                                 <p class="append">{categorie}</p>
                             </Link>
                         ))}
-                        {entry[0].donnees.map((donnee, index) => (
+                        {entry.donnees.map((donnee, index) => (
                             <div key={index}>
                                 <h3>{donnee.titre}</h3>
                                 <MDEditor.Markdown source={donnee.contenu}/>

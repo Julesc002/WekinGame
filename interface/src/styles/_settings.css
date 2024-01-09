@@ -13,11 +13,27 @@
 }
 
 body {
-    background-color: var(--darkest-color);
-    color: var(--lightest-color);
-    font-family: "Noto Sans", "sans-serif";
-    padding-left: 1vw;
+  position: relative;
+  background-image: url("");
+  background-size: cover;
+  background-color: var(--darkest-color);
+  color: var(--lightest-color);
+  font-family: "Noto Sans", "sans-serif";
+  padding-left: 1vw;
 }
+
+body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--darkest-color);
+  opacity: 0.8;
+  z-index: -1;
+}
+
 
 h1 {
     color: var(--highlight-color);

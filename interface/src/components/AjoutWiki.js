@@ -6,12 +6,21 @@ import { API_URL, APP_URL } from '../config';
 function AjoutWiki() {
     const { nomParDefaut } = useParams();
     const [nom, setNom] = useState(nomParDefaut);
+    const [image, setImage] = useState('');
     const [description, setDescrition] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const nav = useNavigate();
 
+    const handleRetourClick = () => {
+        nav(-1);
+    };
+
     const majNom = (e) => {
         setNom(e.target.value);
+    };
+
+    const majImage = (e) => {
+        setImage(e.target.value);
     };
 
     const majDesc = (e) => {
@@ -25,6 +34,7 @@ function AjoutWiki() {
         const requestData = {
             nom: nom,
             description: description,
+            imageBackground : image,
             adminId : localStorage.getItem('account')
         };
         if (nom.trim().length === 0 || description.trim().length === 0) {
@@ -57,8 +67,10 @@ function AjoutWiki() {
                 <input type="text" placeholder="Nom" value={nom} onChange={majNom} />
               </div>
               <textarea rows="10" placeholder="Description" onChange={majDesc} />
+              <input type="text" placeholder="Lien de l'image de fond" value={image} onChange={majImage} />
               <div>
                   <button class="button-highlight" onClick={handleAddWiki}>Valider</button>
+                  <button style={{ cursor: 'pointer' }} onClick={handleRetourClick}>Retour</button>
               </div>
               <p>{errorMessage}</p>
             </div>

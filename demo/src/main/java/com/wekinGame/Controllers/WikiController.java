@@ -11,6 +11,7 @@ import java.util.Set;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,8 +39,7 @@ public class WikiController {
 
     @GetMapping("/search/wiki")
     public List<Document> getTenWikisByPrefix(
-        final @RequestParam(value = "game") String gameNamePrefix
-    ) {
+            final @RequestParam(value = "game") String gameNamePrefix) {
         int desiredAmount = 10;
         List<Document> results = searchWikisByPrefix(gameNamePrefix);
         if (results.size() > desiredAmount) {
@@ -50,9 +50,8 @@ public class WikiController {
 
     @GetMapping("/wiki/{idWiki}/content/{idUser}")
     public Document getContentForOneWiki(
-        @PathVariable("idWiki") final String idWiki,
-        @PathVariable("idUser") final String idUser
-    ) {
+            @PathVariable("idWiki") final String idWiki,
+            @PathVariable("idUser") final String idUser) {
         Document wiki = getWikiById(idWiki);
         List<Document> categoriesWithEntries = getCategoriesWithEntries(wiki, idUser);
         // Créer le résultat final
@@ -91,18 +90,17 @@ public class WikiController {
             return new Document("error", 500);
         }
     }
-    
+
     @GetMapping("wiki/{id}/admin")
-    public List<Document> getAdmins(final @PathVariable int id){
+    public List<Document> getAdmins(final @PathVariable int id) {
         return WikiRepository.getAdminsByWikiId(id);
     }
 
     @PutMapping("/wiki/{id}/admin/add")
     public ResponseEntity<String> addAdminOnWikis(
-        final @RequestBody Map<String,String> admin ,
-        final @PathVariable String idWiki
-    ) {
-        try{
+            final @RequestBody Map<String, String> admin,
+            final @PathVariable String idWiki) {
+        try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             UpdateResult result = WikiRepository.addAdminToWiki(idAdmin, Integer.parseInt(idWiki));
             if (result.getModifiedCount() == 0) {
@@ -117,13 +115,28 @@ public class WikiController {
 
     @PutMapping("/wiki/{id}/admin/delete")
     public ResponseEntity<String> removeAdmin(
-        final @RequestBody Map<String,String> admin,
-        final @PathVariable String idWiki
-    ) {
-        try{
+            final @RequestBody Map<String, String> admin,
+            final @PathVariable String idWiki) {
+        try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             WikiRepository.removeAdminFromWiki(idAdmin, Integer.parseInt(idWiki));
             return new ResponseEntity<>("200 OK", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/wiki/{id}/delete")
+    public ResponseEntity<String> removeWiki(@PathVariable String id, @RequestBody Map<String, Integer> user) {
+        try {
+            if (WikiRepository.isOwnerByWikiId(Integer.parseInt(id), user.get("id"))) {
+                EntryRepository.deleteAllEntriesForOneWiki(Integer.parseInt(id));
+                WikiRepository.deleteWiki(Integer.parseInt(id));
+                return new ResponseEntity<>("200 OK", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("403 Forbidden", HttpStatus.FORBIDDEN);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -139,9 +152,8 @@ public class WikiController {
     }
 
     private List<Document> getCategoriesWithEntries(
-        final Document wiki,
-        final String idUser
-    ) {
+            final Document wiki,
+            final String idUser) {
         List<Document> categories = new ArrayList<>();
         for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, Integer.parseInt(idUser))) {
             Document category = new Document();
@@ -186,10 +198,13 @@ public class WikiController {
         return false;
     }
 
+    private boolean isOwner(final int idWiki, final String idUser) {
+        return true;
+    }
+
     private Map<String, List<Document>> addCategoriesWithoutEntry(
-        final Document wiki,
-        final Map<String, List<Document>> categoriesWithEntryOnly
-    ) {
+            final Document wiki,
+            final Map<String, List<Document>> categoriesWithEntryOnly) {
         Map<String, List<Document>> categories = categoriesWithEntryOnly;
         for (String category : (List<String>) wiki.get("categories")) {
             if (!categoriesWithEntryOnly.containsKey(category)) {
@@ -200,9 +215,8 @@ public class WikiController {
     }
 
     private int verifyParametersAndGetIdAdmin(
-        final Map<String,String> admin,
-        final String id
-    ) throws Exception {
+            final Map<String, String> admin,
+            final String id) throws Exception {
         String pseudo = admin.get("pseudo");
         if (pseudo.isEmpty() && id.isEmpty()) {
             throw new Exception("400 bad request");
