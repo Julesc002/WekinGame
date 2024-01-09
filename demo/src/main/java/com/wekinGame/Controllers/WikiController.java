@@ -66,6 +66,12 @@ public class WikiController {
         return result;
     }
 
+    @GetMapping("/wiki/{idWiki}/background")
+    public String getUrlBackgroundWiki(@PathVariable("idWiki") final String idWiki) {
+        Document wiki = getWikiById(idWiki);
+        return (String) wiki.get("imageBackground");
+    }
+
     @PostMapping("/wiki/create")
     public Document createWiki(final @RequestBody Map<String, String> newWikiData) {
         try {

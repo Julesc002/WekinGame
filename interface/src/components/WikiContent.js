@@ -15,6 +15,12 @@ function WikiContent() {
 
     useEffect(() => {
         searchDataWiki(id);
+
+        document.body.style.backgroundImage = 'url("https://fastncurious.fr/wp-content/uploads/2012/03/mcdo-1.jpg")';
+
+        return () => {
+            document.body.style.backgroundImage = 'none';
+        };
     }, [id]);
 
     const searchDataWiki = (id) => {
@@ -77,7 +83,7 @@ function WikiContent() {
     };
 
     return (
-        <div>
+        <div className="contenuWiki">
             <h2>Wiki {wiki?.nom || ""}</h2>
             <p>{wiki?.description || ""}</p>
             {isUserOwner() && (
