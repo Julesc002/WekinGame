@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,10 +20,15 @@ import com.wekinGame.Repository.WikiRepository;
 @ExtendWith(MockitoExtension.class)
 public class CategoryControllerTest {
 
-	MockedStatic<WikiRepository> wikiMock = mockStatic(WikiRepository.class);
+	private static MockedStatic<WikiRepository> wikiMock = mockStatic(WikiRepository.class);
 
     @InjectMocks
-	CategoryController categoryController;
+	private CategoryController categoryController;
+
+    @AfterAll
+    public static void close() {
+        wikiMock.close();
+    }
 	
     @Test
     public void testGetCategoriesWithIdWiki() {
@@ -36,7 +42,7 @@ public class CategoryControllerTest {
         
         // WHEN
         List<String> obtainedCategories = categoryController.getCategoriesWithIdWiki(idWiki);
-
+        
         // THEN
         assertEquals(expectedCategories, obtainedCategories);
     }
@@ -46,7 +52,7 @@ public class CategoryControllerTest {
         // GIVEN
         String idWiki = "1";
         wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(null);
-
+        
         // THEN
         assertThrows(NullPointerException.class, () -> categoryController.getCategoriesWithIdWiki(idWiki));
     }
