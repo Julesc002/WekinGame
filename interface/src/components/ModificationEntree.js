@@ -1,8 +1,9 @@
+import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
-import MDEditor from "@uiw/react-md-editor";
+import BackgroundWiki from "./BackgroundWiki";
 
 function ModificationEntree() {
     const { wikiId, entreeId } = useParams();
@@ -40,10 +41,10 @@ function ModificationEntree() {
     };
 
     useEffect(() => {
-        if (entree && entree[0]) {
-            setEntreeNom(entree[0].nom);
-            setCategoriesForEntree([...entree[0].categories]);
-            setEntreeDonnees([...entree[0].donnees]);
+        if (entree && Object.keys(entree).length !== 0) {
+            setEntreeNom(entree.nom);
+            setCategoriesForEntree([...entree.categories]);
+            setEntreeDonnees([...entree.donnees]);
         }
     }, [entree]);
 
@@ -132,7 +133,8 @@ function ModificationEntree() {
 
     return (
         <div className="flex-down">
-            {entree && entree[0] && (
+            <BackgroundWiki id={wikiId} />
+            {entree && (
                 <>
                     <h2>Modification de l'entrée</h2>
                     <label>

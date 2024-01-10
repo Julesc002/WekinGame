@@ -1,9 +1,10 @@
+import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AjoutCategorie from '../components/AjoutCategorie';
 import { API_URL, APP_URL } from '../config';
-import MDEditor from "@uiw/react-md-editor";
+import BackgroundWiki from "./BackgroundWiki";
 
 function AjoutEntree() {
     const { id } = useParams();
@@ -110,7 +111,7 @@ function AjoutEntree() {
 
     useEffect(() => {
         getCategories(id);
-    });
+    }, [id]);
 
     const getCategories = (id) => {
         axios.get(`${API_URL}/wiki/` + id).then((res) => {
@@ -120,6 +121,7 @@ function AjoutEntree() {
 
     return (
         <div class="flex-down">
+            <BackgroundWiki id={id} />
             <h2>Nouvelle entrée</h2>
             <label>
                 Nom de l'entrée :

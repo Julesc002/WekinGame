@@ -76,12 +76,12 @@ public class EntryController {
         }
     }
 
-    @GetMapping("/delete/entry/{_id}")
+    @GetMapping("/delete/entry/{idEntry}")
     public void deleteEntry(final @PathVariable String idEntry) {
         EntryRepository.deleteEntry(Integer.parseInt(idEntry));
     }
     
-    @PutMapping("/modify/entry/{_id}")
+    @PutMapping("/modify/entry/{idEntry}")
     public ResponseEntity<String> modifyEntry(
         final @RequestBody Entry entry,
         final @PathVariable String idEntry

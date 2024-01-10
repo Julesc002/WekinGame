@@ -80,17 +80,31 @@ public class CategoryController {
             Document setOldCategoryNameWithNew = new Document("$set", new Document("categories.$", newCategoryName));
             String resultModifyCategoryWikis = WikiRepository.modifyCategoryNameForWikis(
                 (String) oldCategoryName.get("categories"),
-                (Integer) oldCategoryName.get("id"), setOldCategoryNameWithNew);
+                (Integer) oldCategoryName.get("id"),
+                setOldCategoryNameWithNew
+            );
             String resultModifyCategoryEntries = EntryRepository.modifyCategoriesNameForEntries(
                 (String) oldCategoryName.get("categories"),
-                (Integer) oldCategoryName.get("id"), setOldCategoryNameWithNew);
-            if (resultModifyCategoryEntries.equals("404") && resultModifyCategoryWikis.equals("404")) {
-                return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
-            } else if (resultModifyCategoryEntries.equals("200") && resultModifyCategoryWikis.equals("200")) {
-                return new ResponseEntity<>("200 OK", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+                (Integer) oldCategoryName.get("id"),
+                setOldCategoryNameWithNew
+            );
+            return getResponseEntity(resultModifyCategoryWikis, resultModifyCategoryEntries);
+        }
+    }
+
+    private ResponseEntity<String> getResponseEntity(String resultModifyCategoryWikis, String resultModifyCategoryEntries) {
+        if (
+            resultModifyCategoryEntries.equals("404")
+            && resultModifyCategoryWikis.equals("404")
+        ) {
+            return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+        } else if (
+            resultModifyCategoryEntries.equals("200")
+            && resultModifyCategoryWikis.equals("200")
+        ) {
+            return new ResponseEntity<>("200 OK", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

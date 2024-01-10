@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
 import AjoutCategorie from "./AjoutCategorie";
+import BackgroundWiki from "./BackgroundWiki";
 
 function WikiContent() {
     const { id } = useParams();
@@ -18,7 +19,11 @@ function WikiContent() {
     }, [id]);
 
     const searchDataWiki = (id) => {
-        axios.get(`${API_URL}/wiki/${id}/content`).then((res) => {
+        let uid = -1;
+        if(localStorage.getItem("account)")){
+            uid=localStorage.getItem("account");
+        }
+        axios.get(`${API_URL}/wiki/${id}/content/${uid}`).then((res) => {
             setWiki(res.data);
         }).catch((error) => {
             console.error(error);
@@ -73,7 +78,8 @@ function WikiContent() {
     };
 
     return (
-        <div>
+        <div className="contenuWiki">
+            <BackgroundWiki id={id}/>
             <h2>Wiki {wiki?.nom || ""}</h2>
             <p>{wiki?.description || ""}</p>
             {isUserOwner() && (
@@ -129,7 +135,7 @@ function WikiContent() {
                     </div>
                 ))
             )}
-            {isUserAdmin() && (
+            {isUserAdmin() && wiki.categoriesWithoutEntry &&(
                 <div>
                     <h3>Catégories sans entrées :</h3>
                     {wiki && wiki.categoriesWithoutEntry.map((categorie) => (
