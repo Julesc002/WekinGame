@@ -39,7 +39,8 @@ public class WikiController {
 
     @GetMapping("/search/wiki")
     public List<Document> getTenWikisByPrefix(
-            final @RequestParam(value = "game") String gameNamePrefix) {
+        final @RequestParam(value = "game") String gameNamePrefix
+    ) {
         int desiredAmount = 10;
         List<Document> results = searchWikisByPrefix(gameNamePrefix);
         if (results.size() > desiredAmount) {
@@ -50,11 +51,11 @@ public class WikiController {
 
     @GetMapping("/wiki/{idWiki}/content/{idUser}")
     public Document getContentForOneWiki(
-            @PathVariable("idWiki") final String idWiki,
-            @PathVariable("idUser") final String idUser) {
+        @PathVariable("idWiki") final String idWiki,
+        @PathVariable("idUser") final String idUser
+    ) {
         Document wiki = getWikiById(idWiki);
         List<Document> categoriesWithEntries = getCategoriesWithEntries(wiki, idUser);
-        // Créer le résultat final
         Document result = new Document();
         result.put("_id", wiki.getInteger("_id"));
         result.put("nom", wiki.getString("nom"));
@@ -106,8 +107,9 @@ public class WikiController {
 
     @PutMapping("/wiki/{idWiki}/admin/add")
     public ResponseEntity<String> addAdminOnWikis(
-            final @RequestBody Map<String, String> admin,
-            final @PathVariable String idWiki) {
+        final @RequestBody Map<String, String> admin,
+        final @PathVariable String idWiki
+    ) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             UpdateResult result = WikiRepository.addAdminToWiki(idAdmin, Integer.parseInt(idWiki));
@@ -123,8 +125,9 @@ public class WikiController {
 
     @PutMapping("/wiki/{idWiki}/admin/delete")
     public ResponseEntity<String> removeAdmin(
-            final @RequestBody Map<String, String> admin,
-            final @PathVariable String idWiki) {
+        final @RequestBody Map<String, String> admin,
+        final @PathVariable String idWiki
+    ) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             WikiRepository.removeAdminFromWiki(idAdmin, Integer.parseInt(idWiki));
@@ -136,7 +139,10 @@ public class WikiController {
     }
 
     @DeleteMapping("/wiki/{id}/delete")
-    public ResponseEntity<String> removeWiki(@PathVariable String id, @RequestBody Map<String, Integer> user) {
+    public ResponseEntity<String> removeWiki(
+        @PathVariable String id,
+        @RequestBody Map<String, Integer> user
+    ) {
         try {
             if (WikiRepository.isOwnerByWikiId(Integer.parseInt(id), user.get("id"))) {
                 EntryRepository.deleteAllEntriesForOneWiki(Integer.parseInt(id));
@@ -160,8 +166,9 @@ public class WikiController {
     }
 
     private List<Document> getCategoriesWithEntries(
-            final Document wiki,
-            final String idUser) {
+        final Document wiki,
+        final String idUser
+    ) {
         List<Document> categories = new ArrayList<>();
         for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, Integer.parseInt(idUser))) {
             Document category = new Document();
@@ -206,13 +213,10 @@ public class WikiController {
         return false;
     }
 
-    private boolean isOwner(final int idWiki, final String idUser) {
-        return true;
-    }
-
     private Map<String, List<Document>> addCategoriesWithoutEntry(
-            final Document wiki,
-            final Map<String, List<Document>> categoriesWithEntryOnly) {
+        final Document wiki,
+        final Map<String, List<Document>> categoriesWithEntryOnly
+    ) {
         Map<String, List<Document>> categories = categoriesWithEntryOnly;
         for (String category : (List<String>) wiki.get("categories")) {
             if (!categoriesWithEntryOnly.containsKey(category)) {
@@ -223,8 +227,9 @@ public class WikiController {
     }
 
     private int verifyParametersAndGetIdAdmin(
-            final Map<String, String> admin,
-            final String id) throws Exception {
+        final Map<String, String> admin,
+        final String id
+    ) throws Exception {
         String pseudo = admin.get("pseudo");
         if (pseudo.isEmpty() && id.isEmpty()) {
             throw new Exception("400 bad request");
