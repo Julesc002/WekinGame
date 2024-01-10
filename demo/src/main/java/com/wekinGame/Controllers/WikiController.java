@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,7 +55,6 @@ public class WikiController {
             @PathVariable("idUser") final String idUser) {
         Document wiki = getWikiById(idWiki);
         List<Document> categoriesWithEntries = getCategoriesWithEntries(wiki, idUser);
-        // Créer le résultat final
         Document result = new Document();
         result.put("_id", wiki.getInteger("_id"));
         result.put("nom", wiki.getString("nom"));
@@ -74,6 +74,17 @@ public class WikiController {
         return image;
     }
 
+    @PatchMapping("/wiki/{idWiki}/background")
+    public String patchBackgroundImage(@PathVariable("idWiki") final String idWiki,
+            @RequestBody final Map<String, String> data) {
+        Document setOldBackgroundImageWithNew = new Document("$set",
+                new Document("imageBackground", data.get("image")));
+        String resultModifyBackgroundImage = WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
+                setOldBackgroundImageWithNew);
+        System.out.println(data.get("image"));
+        return resultModifyBackgroundImage;
+    }
+
     @PostMapping("/wiki/create")
     public Document createWiki(final @RequestBody Map<String, String> newWikiData) {
         try {
@@ -84,13 +95,13 @@ public class WikiController {
             String date = "" + LocalDate.now().format(patternJour);
             int id = WikiRepository.getMaxId() + 1;
             Document newWiki = new Document("_id", id)
-                .append("nom", newWikiData.get("nom"))
-                .append("description", newWikiData.get("description"))
-                .append("owner", Integer.valueOf(newWikiData.get("adminId")))
-                .append("admins", admins)
-                .append("categories", categories)
-                .append("imageBackground",newWikiData.get("imageBackground"))
-                .append("date_creation", date);
+                    .append("nom", newWikiData.get("nom"))
+                    .append("description", newWikiData.get("description"))
+                    .append("owner", Integer.valueOf(newWikiData.get("adminId")))
+                    .append("admins", admins)
+                    .append("categories", categories)
+                    .append("imageBackground", newWikiData.get("imageBackground"))
+                    .append("date_creation", date);
             WikiRepository.push(newWiki);
             return new Document("_id", id);
         } catch (Exception e) {
@@ -136,7 +147,9 @@ public class WikiController {
     }
 
     @DeleteMapping("/wiki/{id}/delete")
-    public ResponseEntity<String> removeWiki(@PathVariable String id, @RequestBody Map<String, Integer> user) {
+    public ResponseEntity<String> removeWiki(
+            @PathVariable String id,
+            @RequestBody Map<String, Integer> user) {
         try {
             if (WikiRepository.isOwnerByWikiId(Integer.parseInt(id), user.get("id"))) {
                 EntryRepository.deleteAllEntriesForOneWiki(Integer.parseInt(id));
@@ -163,7 +176,8 @@ public class WikiController {
             final Document wiki,
             final String idUser) {
         List<Document> categories = new ArrayList<>();
-        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, Integer.parseInt(idUser))) {
+        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki,
+                Integer.parseInt(idUser))) {
             Document category = new Document();
             category.put("nom", categoryWithEntries.getKey());
             category.put("entrees", categoryWithEntries.getValue());
@@ -173,9 +187,8 @@ public class WikiController {
     }
 
     private Set<Map.Entry<String, List<Document>>> getCategoriesWithEntriesAsMap(
-        final Document wiki,
-        final int idUser
-    ) {
+            final Document wiki,
+            final int idUser) {
         List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
         Map<String, List<Document>> categorizedEntries = new HashMap<>();
         for (Document entry : entries) {
@@ -194,9 +207,8 @@ public class WikiController {
     }
 
     private boolean isAdmin(
-        final int idWiki,
-        final int idUser
-    ) {
+            final int idWiki,
+            final int idUser) {
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {
@@ -204,10 +216,6 @@ public class WikiController {
             }
         }
         return false;
-    }
-
-    private boolean isOwner(final int idWiki, final String idUser) {
-        return true;
     }
 
     private Map<String, List<Document>> addCategoriesWithoutEntry(
