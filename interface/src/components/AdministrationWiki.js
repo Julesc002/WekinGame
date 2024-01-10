@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
+import BackgroundWiki from "./BackgroundWiki";
 
 function AdminWiki() {
     const { wikiId} = useParams();
@@ -84,6 +85,7 @@ function AdminWiki() {
 
     return (
         <div className="flex-down">
+            <BackgroundWiki id={wikiId} />
             {admin && admin[0] && (
                 <div>
                     <h2>Gestion des administrateurs :</h2>

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
+import BackgroundWiki from "./BackgroundWiki";
 
 function ModifierCategorie() {
     const { id, oldCategoryName } = useParams();
@@ -38,6 +39,7 @@ function ModifierCategorie() {
 
     return (
         <div>
+            <BackgroundWiki id={id} />
             <p> Ancien nom de la catégorie : {oldCategoryName} </p>
             <input type="text" placeholder="Nouveau nom categorie" onChange={handleChangeName} value={newCategoryName} />
             <button onClick={handleModifyCategory}> Modifier </button>

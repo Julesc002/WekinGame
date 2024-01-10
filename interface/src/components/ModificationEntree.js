@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
+import BackgroundWiki from "./BackgroundWiki";
 
 function ModificationEntree() {
     const { wikiId, entreeId } = useParams();
@@ -132,6 +133,7 @@ function ModificationEntree() {
 
     return (
         <div className="flex-down">
+            <BackgroundWiki id={wikiId} />
             {entree && (
                 <>
                     <h2>Modification de l'entrée</h2>
