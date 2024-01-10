@@ -1,10 +1,12 @@
 import React from 'react';
-import Header from '../components/Header';
 import { NavLink } from 'react-router-dom';
+import DisableBackgroundWiki from '../components/DisableBackgroundWiki';
+import Header from '../components/Header';
 
 const Home = () => {
     return (
         <div>
+            <DisableBackgroundWiki />
             <Header />
             <h4>Bienvenue dans WekinGames, la référence du wiki jeux vidéo </h4>
             <NavLink to="/allWikis">
