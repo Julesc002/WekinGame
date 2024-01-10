@@ -22,6 +22,7 @@ import com.wekinGame.Repository.WikiRepository;
 public class WikiControllerTest {
 
 	static MockedStatic<WikiRepository> wikiMock = mockStatic(WikiRepository.class);
+    static MockedStatic<EntryRepository> entryMock = mockStatic(EntryRepository.class);
 
     @InjectMocks
 	WikiController wikiController;
@@ -142,12 +143,48 @@ public class WikiControllerTest {
         assertEquals(expectedWikis, obtainedWiki);
     }
     @Test
-    public void testGetContentForOneWiki() {
+    public void testGetContentForOneWikiAsAdmin() { // TODO one test as admin and one test as non-admin
         // GIVEN
         String idUser = "1";
         String idWiki = "1";
-        String idAdmin = "2";
-        
+        String idAdmin = "1";
+        final int NB_CATEGORIES = 3; // 2 categories with different entries in them, one empty
+        List<String> categories = new ArrayList<>();
+        for (int i = 1; i <= NB_CATEGORIES; i++) {
+            categories.add(String.format("categorie%d", i));
+        }
+        List<Document> entries = new ArrayList<>();
+        final int NB_ENTRIES = 3;
+        for (int i = 1; i <= NB_ENTRIES; i++) {
+            Document entry = new Document();
+            entry.append("_id", i);
+            entry.append("nom", String.format("entry%d", i));
+            List<String> entryCategories = new ArrayList<>();
+            if (i < NB_ENTRIES) {
+                // We don't want to have the last category in the first entry (for variety)
+                entryCategories.add(categories.get(0));
+            }
+            if (i > 1) {
+                // We don't want to have the first category in the last entry (for variety)
+                entryCategories.add(categories.get(NB_CATEGORIES - 2));
+                // We take (NB_CATEGORIES - 2) so we don't assign any entries to the last category (for variety)
+            }
+            entry.append("categories", entryCategories);
+            entries.add(entry);
+        }
+        List<Document> expectedCategoriesWithEntries = new ArrayList<>();
+        for (String categoryName : categories) {
+            Document category = new Document();
+            category.append("nom", categoryName);
+            List<Document> categoryEntries = new ArrayList<>();
+            for (Document entry : entries) {
+                if (((List<String>) entry.get("categories")).contains(categoryName)) {
+                    categoryEntries.add(entry);
+                }
+            }
+            category.append("entrees", categoryEntries);
+            expectedCategoriesWithEntries.add(category);
+        }
         Document expectedWiki = new Document();
         expectedWiki.append("_id", Integer.parseInt(idWiki));
         expectedWiki.append("nom","nom");
@@ -155,21 +192,9 @@ public class WikiControllerTest {
         expectedWiki.append("description", "test");
         expectedWiki.append("owner",Integer.parseInt(idUser));
         expectedWiki.append("admins", Integer.parseInt(idAdmin));
-
-        Document testWiki = new Document();
-        testWiki.append("_id", 3);
-        testWiki.append("nom", "test");
-
-        List<Document> expectedContent = new ArrayList<>();
-        Document category = new Document();
-        category.append("nom","nom");
-        category.append("entrees",testWiki);
-
-        expectedContent.add(category);
-
-        expectedWiki.append("categories",expectedContent);
-        
-        wikiMock.when(() -> EntryRepository.getEntriesByIdWiki(Integer.parseInt(idWiki))).thenReturn(expectedWiki);
+        expectedWiki.append("categories",expectedCategoriesWithEntries);
+        entryMock.when(() -> EntryRepository.getEntriesByIdWiki(Integer.parseInt(idWiki))).thenReturn(entries);
+        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(expectedWiki);
         
         // WHEN
         Document obtainedWiki = wikiController.getContentForOneWiki(idWiki,idUser);
