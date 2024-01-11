@@ -3,10 +3,10 @@ package com.wekinGame.Controllers;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
@@ -52,8 +52,11 @@ public class WikiController {
     @GetMapping("/wiki/{idWiki}/content/{idUser}")
     public Document getContentForOneWiki(
             @PathVariable("idWiki") final String idWiki,
-            @PathVariable("idUser") final String idUser) {
+            @PathVariable("idUser") final String idUser) throws Exception {
         Document wiki = getWikiById(idWiki);
+        if (wiki == null) {
+            throw new Exception("404 not found");
+        }
         List<Document> categoriesWithEntries = getCategoriesWithEntries(wiki, idUser);
         Document result = new Document();
         result.put("_id", wiki.getInteger("_id"));
@@ -189,8 +192,9 @@ public class WikiController {
     private Set<Map.Entry<String, List<Document>>> getCategoriesWithEntriesAsMap(
             final Document wiki,
             final int idUser) {
+        System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
-        Map<String, List<Document>> categorizedEntries = new HashMap<>();
+        Map<String, List<Document>> categorizedEntries = new TreeMap<>();
         for (Document entry : entries) {
             List<String> entryCategories = (List<String>) entry.get("categories");
             for (String category : entryCategories) {
@@ -207,14 +211,19 @@ public class WikiController {
     }
 
     private boolean isAdmin(
-            final int idWiki,
-            final int idUser) {
+        final int idWiki,
+        final int idUser
+    ) {
+        System.out.println(getAdmins(idWiki));
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {
+                System.out.println("ADMIN TRUE;");
                 return true;
             }
+            System.out.println(adminData.get("_id") + " != " + idUser);
         }
+        System.out.println("ADMIN FALSE");
         return false;
     }
 
