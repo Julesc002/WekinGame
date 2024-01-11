@@ -100,7 +100,7 @@ public class EntryRepository {
         return entry;
     }
 
-    public static List<Document> searchEntryByName(final List<Document> results, final String data) {
+    public static List<Document> searchEntriesByName(final List<Document> results, final String data) {
         Document searchQuery = new Document();
         searchQuery.put("nom", new Document("$regex", data).append("$options", "i"));
         List<Bson> pipeline = Arrays.asList(

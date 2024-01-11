@@ -33,7 +33,7 @@ public class EntryController {
         if (nom.length() == 0) {
             return results;
         } else {
-            return EntryRepository.searchEntryByName(results,nom);
+            return EntryRepository.searchEntriesByName(results,nom);
         }
     }
 
@@ -96,14 +96,16 @@ public class EntryController {
             List<Document> donnees = new ArrayList<Document>();
             for (int i = 0; i < entry.getDonnees().size(); i++) {
                 donnees.add(new Document()
-                        .append("titre", entry.getDonnees().get(i).getTitre())
-                        .append("contenu", entry.getDonnees().get(i).getContenu()));
+                    .append("titre", entry.getDonnees().get(i).getTitre())
+                    .append("contenu", entry.getDonnees().get(i).getContenu())
+                );
             }
             Document modifiedEntry = new Document("$set", new Document()
-                    .append("nom", entry.getNom())
-                    .append("id_wiki", entry.getId_wiki())
-                    .append("categories", entry.getCategories())
-                    .append("donnees", donnees));
+                .append("nom", entry.getNom())
+                .append("id_wiki", entry.getId_wiki())
+                .append("categories", entry.getCategories())
+                .append("donnees", donnees)
+            );
             return EntryRepository.modifyEntry(Integer.parseInt(idEntry), modifiedEntry);
         } catch (Exception e) {
             e.printStackTrace();
