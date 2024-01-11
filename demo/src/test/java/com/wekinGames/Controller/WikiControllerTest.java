@@ -5,7 +5,9 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
@@ -201,7 +203,6 @@ public class WikiControllerTest {
         // GIVEN
         String idUser = "1";
         String idWiki = "1";
-        
         wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(null);
         
         // WHEN
@@ -218,7 +219,6 @@ public class WikiControllerTest {
         String idWiki = "1";
         Document expectedImage = new Document();
         expectedImage.append("url", "img");
-        
         wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(expectedImage);
         
         // WHEN
@@ -243,7 +243,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void TestGetAdmins(){
+    public void testGetAdmins(){
         //GIVEN
         int idWiki = 1;
         List<Document> expectedAdmins = new ArrayList<Document>();
@@ -262,7 +262,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void TestGetAdminsCaseNoneFound(){
+    public void testGetAdminsCaseNoneFound(){
         //GIVEN
         int idWiki = 1;
         List<Document> expectedAdmins = new ArrayList<Document>();
@@ -274,6 +274,31 @@ public class WikiControllerTest {
         //THEN
         assertEquals(expectedAdmins, obtainedAdmins);
     }
+
+    @Test //TODO voir avec alice pourquoi quand je l'appelle une fois ça marche pas
+    public void testPatchBackGroundImage(){
+        //GIVEN
+        String idWiki = "1";
+        Map<String,String> image = new HashMap<String,String>();
+        image.put("image", "test");
+        Document expectedImage = new Document("$set",new Document("imageBackground", image.get("image")));
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),expectedImage), Mockito.never());
+    }
+
+    @Test //TODO voir avec alice pk ça marche pas
+    public void testPatchBackGroundImageCaseNoneFound(){
+        //GIVEN
+        String idWiki = "1";
+        Map<String,String> image = new HashMap<String,String>();
+        Document expectedImage = new Document();
+        wikiMock.when(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),expectedImage)).thenReturn(null);
+
+        //THEN
+        wikiMock.verify(() -> wikiController.patchBackgroundImage(idWiki, image), Mockito.times(1));
+    }
+
 
     private List<Document> setupAdmins(int idAdmin) {
         Document adminData = new Document();

@@ -82,10 +82,8 @@ public class WikiController {
             @RequestBody final Map<String, String> data) {
         Document setOldBackgroundImageWithNew = new Document("$set",
                 new Document("imageBackground", data.get("image")));
-        String resultModifyBackgroundImage = WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
+        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
                 setOldBackgroundImageWithNew);
-        System.out.println(data.get("image"));
-        return resultModifyBackgroundImage;
     }
 
     @PostMapping("/wiki/create")
