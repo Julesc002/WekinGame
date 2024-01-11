@@ -137,6 +137,20 @@ public class WikiRepository {
         collectionWiki.updateOne(Filters.eq("_id", idWiki), Updates.pull("admins", idAdmin));
     }
 
+    public static String updateBackgroundImage(final int idWiki, final Document setQuery) {
+        try {
+            Document searchQuery = new Document("_id", idWiki);
+            UpdateResult result = collectionWiki.updateOne(searchQuery, setQuery);
+            if (result.getModifiedCount() == 0) {
+                return "404";
+            }
+            return "200";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "500";
+        }
+    }
+
     public static String modifyCategoryNameForWikis(
             final String oldNameCategory,
             final int idWiki,
