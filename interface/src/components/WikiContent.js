@@ -60,6 +60,28 @@ function WikiContent() {
       }
     };
 
+    function deleteWiki(wikiId,name){
+        if (window.confirm("Voulez-vous vraiment supprimer le wiki "+name+"?\nCela supprimera tout les éléments realitfs au wiki, comprenant les entrées et les catégories")){
+            if (window.confirm("Cette action est irréversible !\nVous êtes VRAIMENT sûr?")){
+                const uid = localStorage.getItem("account");
+                const content={
+                    id: uid
+                }
+                axios.delete(`${API_URL}/wiki/${wikiId}/delete`,{data:{id:uid}})
+                .then((res)=> {
+                    if (res.status ===200){
+                        window.alert("Wiki supprimé avec succès");
+                        navigate(-1);
+                    }
+                }).catch((error)=>{
+                    if(error.response.status){
+                        window.alert("Erreur lors de la suppression du wiki");
+                    }
+                });
+            }
+        }
+    };
+
     function deleteCategory(categoryName) {
         if (window.confirm("Voulez vous vraiment supprimer la catégorie " + categoryName + " ?\n(celà supprimera TOUTES les entrées appartenant seulement a cette catégorie !)")) {
             if (window.confirm("Cette action est irréversible !\nEtes vous VRAIMENT sûr ?")) {
@@ -75,7 +97,7 @@ function WikiContent() {
                   });
             }
         }
-    };
+    }
 
     return (
         <div className="contenuWiki">
@@ -87,6 +109,8 @@ function WikiContent() {
                     <Link to={`/wiki/${id}/admin`}>
                     <button style={{ cursor: 'pointer' }}>Gérer les Administrateurs</button>
                     </Link>
+                    <br/>
+                    <button class="text-small" onClick={()=>deleteWiki(wiki._id,wiki.nom)}>Supprimer le wiki /!\</button>
                     <br/>
                 </div>
             )}
