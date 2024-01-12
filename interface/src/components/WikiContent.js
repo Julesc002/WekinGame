@@ -106,8 +106,11 @@ function WikiContent() {
             <p>{wiki?.description || ""}</p>
             {isUserOwner() && (
                 <div>
+                    <Link to={`/wiki/${id}/background`}>
+                        <button style={{ cursor: 'pointer' }}>Modifier l'image de fond</button>
+                    </Link>
                     <Link to={`/wiki/${id}/admin`}>
-                    <button style={{ cursor: 'pointer' }}>Gérer les Administrateurs</button>
+                        <button style={{ cursor: 'pointer' }}>Gérer les Administrateurs</button>
                     </Link>
                     <br/>
                     <button class="text-small" onClick={()=>deleteWiki(wiki._id,wiki.nom)}>Supprimer le wiki /!\</button>

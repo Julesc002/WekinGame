@@ -32,7 +32,7 @@ function ModificationEntree() {
 
     useEffect(() => {
         getCategories(wikiId);
-    });
+    }, [wikiId]);
 
     const getCategories = (id) => {
         axios.get(`${API_URL}/wiki/` + id).then((res) => {
