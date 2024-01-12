@@ -33,7 +33,7 @@ public class EntryController {
         if (nom.length() == 0) {
             return results;
         } else {
-            return EntryRepository.searchEntryByName(results,nom);
+            return EntryRepository.searchEntriesByName(results,nom);
         }
     }
 
@@ -96,9 +96,55 @@ public class EntryController {
             List<Document> donnees = new ArrayList<Document>();
             for (int i = 0; i < entry.getDonnees().size(); i++) {
                 donnees.add(new Document()
+                    .append("titre", entry.getDonnees().get(i).getTitre())
+                    .append("contenu", entry.getDonnees().get(i).getContenu())
+                );
+            }
+            Document modifiedEntry = new Document("$set", new Document()
+                .append("nom", entry.getNom())
+                .append("id_wiki", entry.getId_wiki())
+                .append("categories", entry.getCategories())
+                .append("donnees", donnees)
+            );
+            return EntryRepository.modifyEntry(Integer.parseInt(idEntry), modifiedEntry);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/switch/entry/{_id}/{_idData}/{_upOrDown}")
+    public ResponseEntity<String> switchEntry(
+        final @RequestBody Entry entry,
+        final @PathVariable("_id") String idEntry,
+        final @PathVariable("_idData") String idData,
+        final @PathVariable("_upOrDown") String upOrDown) {
+            try {
+            if (entry.getCategories().size() == 0
+            && entry.getDonnees().size() == 0
+            && entry.getId_wiki() < 0
+            && entry.getNom() == null) {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+            }
+            List<Document> donnees = new ArrayList<Document>();
+            for (int i = 0; i < entry.getDonnees().size(); i++) {
+                donnees.add(new Document()
                         .append("titre", entry.getDonnees().get(i).getTitre())
                         .append("contenu", entry.getDonnees().get(i).getContenu()));
             }
+            Document echangDocument = donnees.get(Integer.parseInt(idData));
+            if (upOrDown.equals("up") && Integer.parseInt(idData)>0) {
+                System.out.println("salut");
+                donnees.set(Integer.parseInt(idData), donnees.get(Integer.parseInt(idData)-1));
+                donnees.set(Integer.parseInt(idData)-1, echangDocument);
+            } else if (upOrDown.equals("down") && Integer.parseInt(idData)<(donnees.size()-1)) {
+                System.out.println("salot");
+                donnees.set(Integer.parseInt(idData), donnees.get(Integer.parseInt(idData)+1));
+                donnees.set(Integer.parseInt(idData)+1, echangDocument);
+            } else {
+                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+            }
+
             Document modifiedEntry = new Document("$set", new Document()
                     .append("nom", entry.getNom())
                     .append("id_wiki", entry.getId_wiki())
