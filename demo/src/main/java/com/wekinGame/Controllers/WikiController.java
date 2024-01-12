@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -74,7 +75,18 @@ public class WikiController {
         image.append("url", (String) wiki.get("imageBackground"));
         return image;
     }
-
+    
+    @PatchMapping("/wiki/{idWiki}/background")
+    public String patchBackgroundImage(@PathVariable("idWiki") final String idWiki,
+            @RequestBody final Map<String, String> data) {
+        Document setOldBackgroundImageWithNew = new Document("$set",
+                new Document("imageBackground", data.get("image")));
+        String resultModifyBackgroundImage = WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
+                setOldBackgroundImageWithNew);
+        System.out.println(data.get("image"));
+        return resultModifyBackgroundImage;
+    }
+    
     @PostMapping("/wiki/create")
     public Document createWiki(final @RequestBody Map<String, String> newWikiData) {
         try {
