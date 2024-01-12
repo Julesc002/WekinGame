@@ -4,18 +4,19 @@ import { Route, Routes } from 'react-router-dom';
 import ConnexionAuCompte from './components/ConnexionCompte';
 import CreationCompte from './components/CreationCompte';
 import InfoCompte from './components/InfoCompte';
-import Categorie from './pages/Categorie';
-import Wiki from './pages/Wiki';
 import Layout from './components/Layout';
 import Accueil from './pages/Accueil';
+import Categorie from './pages/Categorie';
 import Entree from './pages/Entree';
-import PageErreur from './pages/PageErreur';
+import PageAdministrerWiki from './pages/PageAdministrerWiki';
+import PageAffichageAllWikis from './pages/PageAffichageAllWikis';
 import PageAjoutEntree from './pages/PageAjoutEntree';
 import PageAjoutWiki from './pages/PageAjoutWiki';
-import PageAffichageAllWikis from './pages/PageAffichageAllWikis';
+import PageErreur from './pages/PageErreur';
+import PageModificationBackgroundImage from './pages/PageModificationBackgroundImage';
 import PageModificationEntree from './pages/PageModificationEntree';
 import PageModifierCategorie from './pages/PageModifierCategorie';
-import PageAdministrerWiki from './pages/PageAdministrerWiki';
+import Wiki from './pages/Wiki';
 
 const App = () => {
 
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/wiki/:wikiId/entry/:entreeId/update" element={<PageModificationEntree />} />
         <Route path='/wiki/:id/category/:oldCategoryName/update' element={<PageModifierCategorie />}/>
         <Route path="/wiki/:wikiId/admin" element={<PageAdministrerWiki/>} />
+        <Route path="/wiki/:wikiId/background" element={<PageModificationBackgroundImage />} />
       </Routes>
     </Layout>
   );
