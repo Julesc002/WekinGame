@@ -3,6 +3,8 @@ package com.wekinGames.Controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,7 +74,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void testGetAllWikisCaseNoneFound() {
+    public void testGetAllWikisCaseNotFound() {
         // GIVEN
         List<Document> expectedWikis = new ArrayList<Document>();
         wikiMock.when(() -> WikiRepository.getAll()).thenReturn(new ArrayList<Document>());
@@ -102,7 +104,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void testGetWikiByIdCaseNoneFound() {
+    public void testGetWikiByIdCaseNotFound() {
         // GIVEN
         String idWiki = "1";
         Document expectedWiki = new Document();
@@ -137,7 +139,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void testGetTenWikisByPrefixCaseNoneFound() {
+    public void testGetTenWikisByPrefixCaseNotFound() {
         // GIVEN
         String prefix = "c";
         String name = "test%d";
@@ -199,7 +201,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void testGetContentForOneWikiCaseNoneFound() { // TODO one test as admin and one test as non-admin
+    public void testGetContentForOneWikiCaseNotFound() { // TODO one test as admin and one test as non-admin
         // GIVEN
         String idUser = "1";
         String idWiki = "1";
@@ -213,13 +215,15 @@ public class WikiControllerTest {
         wikiMock.verify(() -> WikiRepository.getAdminsByWikiId(Integer.parseInt(idWiki)), Mockito.never());
     }
 
-    @Test //TODO Remplir tous les wikis avec une image pour pouvoir tester cette fonction
+    @Test
     public void testGetBackGroundImage(){
         //GIVEN
         String idWiki = "1";
         Document expectedImage = new Document();
         expectedImage.append("url", "img");
-        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(expectedImage);
+        Document sentImage = new Document();
+        sentImage.append("imageBackground", "img");
+        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(sentImage);
         
         // WHEN
         Document obtainedImage = wikiController.getBackgroundImage(idWiki);
@@ -228,17 +232,20 @@ public class WikiControllerTest {
         assertEquals(expectedImage, obtainedImage);
     }
 
-    @Test //TODO même problématique qu'au dessus
-    public void testGetBackGroundImageCaseNoneFound(){
+    @Test
+    public void testGetBackGroundImageCaseNotFound(){
         //GIVEN
         String idWiki = "1";
         Document expectedImage = new Document();
-        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(expectedImage);
-
-        //WHEN
+        expectedImage.append("url", "");
+        Document sentImage = new Document();
+        sentImage.append("imageBackground", "");
+        wikiMock.when(() -> WikiRepository.getById(Integer.parseInt(idWiki))).thenReturn(sentImage);
+        
+        // WHEN
         Document obtainedImage = wikiController.getBackgroundImage(idWiki);
 
-        //THEN
+        // THEN
         assertEquals(expectedImage, obtainedImage);
     }
 
@@ -262,7 +269,7 @@ public class WikiControllerTest {
     }
 
     @Test
-    public void testGetAdminsCaseNoneFound(){
+    public void testGetAdminsCaseNotFound(){
         //GIVEN
         int idWiki = 1;
         List<Document> expectedAdmins = new ArrayList<Document>();
@@ -275,30 +282,126 @@ public class WikiControllerTest {
         assertEquals(expectedAdmins, obtainedAdmins);
     }
 
-    @Test //TODO voir avec alice pourquoi quand je l'appelle une fois ça marche pas
+    @Test
     public void testPatchBackGroundImage(){
         //GIVEN
         String idWiki = "1";
         Map<String,String> image = new HashMap<String,String>();
         image.put("image", "test");
-        Document expectedImage = new Document("$set",new Document("imageBackground", image.get("image")));
+        Document imageSent = new Document("$set",new Document("imageBackground", image.get("image")));
+
+        //WHEN
+        wikiController.patchBackgroundImage(idWiki, image);
 
         //THEN
-        wikiMock.verify(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),expectedImage), Mockito.never());
+        wikiMock.verify(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki), imageSent), Mockito.times(1));
     }
 
-    @Test //TODO voir avec alice pk ça marche pas
-    public void testPatchBackGroundImageCaseNoneFound(){
+    @Test
+    public void testPatchBackGroundImageCaseWikiNotFound(){
         //GIVEN
         String idWiki = "1";
         Map<String,String> image = new HashMap<String,String>();
-        Document expectedImage = new Document();
-        wikiMock.when(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),expectedImage)).thenReturn(null);
+        Document imageSent = new Document("$set",new Document("imageBackground", image.get("image")));
+
+        //WHEN
+        wikiController.patchBackgroundImage(idWiki, image);
 
         //THEN
-        wikiMock.verify(() -> wikiController.patchBackgroundImage(idWiki, image), Mockito.times(1));
+        wikiMock.verify(() -> WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki), imageSent), Mockito.times(1));
     }
 
+    @Test
+    public void testCreateWiki(){
+        //GIVEN
+        int id = 3;
+        List<Integer> admins = new ArrayList<Integer>();
+            admins.add(Integer.valueOf("1"));
+        List<String> categories = new ArrayList<String>();
+        DateTimeFormatter patternJour = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String date = "" + LocalDate.now().format(patternJour);
+        Document newWiki = new Document("_id", id+1)
+                    .append("nom", "test")
+                    .append("description", "test")
+                    .append("owner", 1)
+                    .append("admins", admins)
+                    .append("categories", categories)
+                    .append("imageBackground", "test")
+                    .append("date_creation", date);
+        Map<String,String> data = new HashMap<String,String>();
+        data.put("nom","test");
+        data.put("description","test");
+        data.put("adminId","1");
+        data.put("imageBackground","test");
+        wikiMock.when(() -> WikiRepository.getMaxId()).thenReturn(id);
+
+        //WHEN
+        wikiController.createWiki(data);
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.push(newWiki), Mockito.times(1));
+    }
+
+    @Test
+    public void testAddAdminOnWikis(){
+        //GIVEN
+        String idWiki = "3";
+        int idAdmin = 3;
+        Map<String,String> admin = new HashMap<String,String>();
+        admin.put("pseudo","test");
+        wikiMock.when(() -> WikiRepository.getIdAdminByPseudo(admin.get("pseudo"))).thenReturn(idAdmin);
+
+        //WHEN
+        wikiController.addAdminOnWikis(admin, idWiki);
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.addAdminToWiki(idAdmin,Integer.parseInt(idWiki)), Mockito.times(1));
+    }
+
+    @Test
+    public void testRemoveAdmin(){
+        //GIVEN
+        String idWiki = "3";
+        int idAdmin = 3;
+        Map<String,String> admin = new HashMap<String,String>();
+        admin.put("pseudo","test");
+        wikiMock.when(() -> WikiRepository.getIdAdminByPseudo(admin.get("pseudo"))).thenReturn(idAdmin);
+
+        //WHEN
+        wikiController.removeAdmin(admin, idWiki);
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.removeAdminFromWiki(idAdmin,Integer.parseInt(idWiki)), Mockito.times(1));
+    }
+
+    @Test
+    public void testRemoveWiki(){
+        //GIVEN
+        String idWiki = "3";
+        Map<String,Integer> user = new HashMap<String,Integer>();
+        user.put("id",3);
+        wikiMock.when(() -> WikiRepository.isOwnerByWikiId(Integer.parseInt(idWiki), user.get("id"))).thenReturn(true);
+        //WHEN
+        wikiController.removeWiki(idWiki,user);
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.deleteWiki(Integer.parseInt(idWiki)), Mockito.times(1));
+    }
+
+    @Test
+    public void testRemoveWikiCaseUnauthorized(){
+        //GIVEN
+        String idWiki = "3";
+        Map<String,Integer> user = new HashMap<String,Integer>();
+        user.put("id",3);
+        wikiMock.when(() -> WikiRepository.isOwnerByWikiId(Integer.parseInt(idWiki), user.get("id"))).thenReturn(false);
+
+        //WHEN
+        wikiController.removeWiki(idWiki,user);
+
+        //THEN
+        wikiMock.verify(() -> WikiRepository.deleteWiki(Integer.parseInt(idWiki)), Mockito.never());
+    }
 
     private List<Document> setupAdmins(int idAdmin) {
         Document adminData = new Document();

@@ -78,12 +78,13 @@ public class WikiController {
     }
 
     @PatchMapping("/wiki/{idWiki}/background")
-    public String patchBackgroundImage(@PathVariable("idWiki") final String idWiki,
-            @RequestBody final Map<String, String> data) {
-        Document setOldBackgroundImageWithNew = new Document("$set",
-                new Document("imageBackground", data.get("image")));
-        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
-                setOldBackgroundImageWithNew);
+    public String patchBackgroundImage(
+        @PathVariable("idWiki") final String idWiki,
+        @RequestBody final Map<String, String> data
+    ) {
+        Document newBackgroundImage = new Document("imageBackground", data.get("image"));
+        Document setNewBackGroundImage = new Document("$set", newBackgroundImage);
+        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki), setNewBackGroundImage);
     }
 
     @PostMapping("/wiki/create")
@@ -190,7 +191,6 @@ public class WikiController {
     private Set<Map.Entry<String, List<Document>>> getCategoriesWithEntriesAsMap(
             final Document wiki,
             final int idUser) {
-        System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
         Map<String, List<Document>> categorizedEntries = new TreeMap<>();
         for (Document entry : entries) {
@@ -212,16 +212,12 @@ public class WikiController {
         final int idWiki,
         final int idUser
     ) {
-        System.out.println(getAdmins(idWiki));
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {
-                System.out.println("ADMIN TRUE;");
                 return true;
             }
-            System.out.println(adminData.get("_id") + " != " + idUser);
         }
-        System.out.println("ADMIN FALSE");
         return false;
     }
 
