@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -29,7 +28,10 @@ public class EntryRepository {
         Document searchQuery = new Document();
         searchQuery.put("id_wiki", id);
         List<Document> entries = new ArrayList<>();
-        FindIterable<Document> cursor = collection.find(searchQuery);
+        List<Bson> pipeline = Arrays.asList(
+                Aggregates.match(searchQuery),
+                Aggregates.sort(Sorts.ascending("nom")));
+        AggregateIterable<Document> cursor = collection.aggregate(pipeline);
         try (final MongoCursor<Document> cursorIterator = cursor.cursor()) {
             while (cursorIterator.hasNext()) {
                 entries.add(cursorIterator.next());
