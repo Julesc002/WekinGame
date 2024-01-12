@@ -3,10 +3,10 @@ package com.wekinGame.Controllers;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
@@ -40,8 +40,7 @@ public class WikiController {
 
     @GetMapping("/search/wiki")
     public List<Document> getTenWikisByPrefix(
-        final @RequestParam(value = "game") String gameNamePrefix
-    ) {
+            final @RequestParam(value = "game") String gameNamePrefix) {
         int desiredAmount = 10;
         List<Document> results = searchWikisByPrefix(gameNamePrefix);
         if (results.size() > desiredAmount) {
@@ -52,10 +51,12 @@ public class WikiController {
 
     @GetMapping("/wiki/{idWiki}/content/{idUser}")
     public Document getContentForOneWiki(
-        @PathVariable("idWiki") final String idWiki,
-        @PathVariable("idUser") final String idUser
-    ) {
+            @PathVariable("idWiki") final String idWiki,
+            @PathVariable("idUser") final String idUser) throws Exception {
         Document wiki = getWikiById(idWiki);
+        if (wiki == null) {
+            throw new Exception("404 not found");
+        }
         List<Document> categoriesWithEntries = getCategoriesWithEntries(wiki, idUser);
         Document result = new Document();
         result.put("_id", wiki.getInteger("_id"));
@@ -75,18 +76,16 @@ public class WikiController {
         image.append("url", (String) wiki.get("imageBackground"));
         return image;
     }
-    
+
     @PatchMapping("/wiki/{idWiki}/background")
     public String patchBackgroundImage(@PathVariable("idWiki") final String idWiki,
             @RequestBody final Map<String, String> data) {
         Document setOldBackgroundImageWithNew = new Document("$set",
                 new Document("imageBackground", data.get("image")));
-        String resultModifyBackgroundImage = WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
+        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
                 setOldBackgroundImageWithNew);
-        System.out.println(data.get("image"));
-        return resultModifyBackgroundImage;
     }
-    
+
     @PostMapping("/wiki/create")
     public Document createWiki(final @RequestBody Map<String, String> newWikiData) {
         try {
@@ -97,13 +96,13 @@ public class WikiController {
             String date = "" + LocalDate.now().format(patternJour);
             int id = WikiRepository.getMaxId() + 1;
             Document newWiki = new Document("_id", id)
-                .append("nom", newWikiData.get("nom"))
-                .append("description", newWikiData.get("description"))
-                .append("owner", Integer.valueOf(newWikiData.get("adminId")))
-                .append("admins", admins)
-                .append("categories", categories)
-                .append("imageBackground",newWikiData.get("imageBackground"))
-                .append("date_creation", date);
+                    .append("nom", newWikiData.get("nom"))
+                    .append("description", newWikiData.get("description"))
+                    .append("owner", Integer.valueOf(newWikiData.get("adminId")))
+                    .append("admins", admins)
+                    .append("categories", categories)
+                    .append("imageBackground", newWikiData.get("imageBackground"))
+                    .append("date_creation", date);
             WikiRepository.push(newWiki);
             return new Document("_id", id);
         } catch (Exception e) {
@@ -119,9 +118,8 @@ public class WikiController {
 
     @PutMapping("/wiki/{idWiki}/admin/add")
     public ResponseEntity<String> addAdminOnWikis(
-        final @RequestBody Map<String, String> admin,
-        final @PathVariable String idWiki
-    ) {
+            final @RequestBody Map<String, String> admin,
+            final @PathVariable String idWiki) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             UpdateResult result = WikiRepository.addAdminToWiki(idAdmin, Integer.parseInt(idWiki));
@@ -137,9 +135,8 @@ public class WikiController {
 
     @PutMapping("/wiki/{idWiki}/admin/delete")
     public ResponseEntity<String> removeAdmin(
-        final @RequestBody Map<String, String> admin,
-        final @PathVariable String idWiki
-    ) {
+            final @RequestBody Map<String, String> admin,
+            final @PathVariable String idWiki) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             WikiRepository.removeAdminFromWiki(idAdmin, Integer.parseInt(idWiki));
@@ -152,9 +149,8 @@ public class WikiController {
 
     @DeleteMapping("/wiki/{id}/delete")
     public ResponseEntity<String> removeWiki(
-        @PathVariable String id,
-        @RequestBody Map<String, Integer> user
-    ) {
+            @PathVariable String id,
+            @RequestBody Map<String, Integer> user) {
         try {
             if (WikiRepository.isOwnerByWikiId(Integer.parseInt(id), user.get("id"))) {
                 EntryRepository.deleteAllEntriesForOneWiki(Integer.parseInt(id));
@@ -178,11 +174,11 @@ public class WikiController {
     }
 
     private List<Document> getCategoriesWithEntries(
-        final Document wiki,
-        final String idUser
-    ) {
+            final Document wiki,
+            final String idUser) {
         List<Document> categories = new ArrayList<>();
-        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki, Integer.parseInt(idUser))) {
+        for (Map.Entry<String, List<Document>> categoryWithEntries : getCategoriesWithEntriesAsMap(wiki,
+                Integer.parseInt(idUser))) {
             Document category = new Document();
             category.put("nom", categoryWithEntries.getKey());
             category.put("entrees", categoryWithEntries.getValue());
@@ -192,11 +188,11 @@ public class WikiController {
     }
 
     private Set<Map.Entry<String, List<Document>>> getCategoriesWithEntriesAsMap(
-        final Document wiki,
-        final int idUser
-    ) {
+            final Document wiki,
+            final int idUser) {
+        System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         List<Document> entries = EntryRepository.getEntriesByIdWiki(wiki.getInteger("_id"));
-        Map<String, List<Document>> categorizedEntries = new HashMap<>();
+        Map<String, List<Document>> categorizedEntries = new TreeMap<>();
         for (Document entry : entries) {
             List<String> entryCategories = (List<String>) entry.get("categories");
             for (String category : entryCategories) {
@@ -216,19 +212,22 @@ public class WikiController {
         final int idWiki,
         final int idUser
     ) {
+        System.out.println(getAdmins(idWiki));
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {
+                System.out.println("ADMIN TRUE;");
                 return true;
             }
+            System.out.println(adminData.get("_id") + " != " + idUser);
         }
+        System.out.println("ADMIN FALSE");
         return false;
     }
 
     private Map<String, List<Document>> addCategoriesWithoutEntry(
-        final Document wiki,
-        final Map<String, List<Document>> categoriesWithEntryOnly
-    ) {
+            final Document wiki,
+            final Map<String, List<Document>> categoriesWithEntryOnly) {
         Map<String, List<Document>> categories = categoriesWithEntryOnly;
         for (String category : (List<String>) wiki.get("categories")) {
             if (!categoriesWithEntryOnly.containsKey(category)) {
@@ -239,9 +238,8 @@ public class WikiController {
     }
 
     private int verifyParametersAndGetIdAdmin(
-        final Map<String, String> admin,
-        final String id
-    ) throws Exception {
+            final Map<String, String> admin,
+            final String id) throws Exception {
         String pseudo = admin.get("pseudo");
         if (pseudo.isEmpty() && id.isEmpty()) {
             throw new Exception("400 bad request");
