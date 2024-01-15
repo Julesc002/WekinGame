@@ -78,12 +78,13 @@ public class WikiController {
     }
 
     @PatchMapping("/wiki/{idWiki}/background")
-    public String patchBackgroundImage(@PathVariable("idWiki") final String idWiki,
-            @RequestBody final Map<String, String> data) {
-        Document setOldBackgroundImageWithNew = new Document("$set",
-                new Document("imageBackground", data.get("image")));
-        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki),
-                setOldBackgroundImageWithNew);
+    public String patchBackgroundImage(
+        @PathVariable("idWiki") final String idWiki,
+        @RequestBody final Map<String, String> data
+    ) {
+        Document newBackgroundImage = new Document("imageBackground", data.get("image"));
+        Document setNewBackGroundImage = new Document("$set", newBackgroundImage);
+        return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki), setNewBackGroundImage);
     }
 
     @PostMapping("/wiki/create")
@@ -208,8 +209,9 @@ public class WikiController {
     }
 
     private boolean isAdmin(
-            final int idWiki,
-            final int idUser) {
+        final int idWiki,
+        final int idUser
+    ) {
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {

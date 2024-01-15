@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
 import BackgroundWiki from "./BackgroundWiki";
+import MDEditor from "@uiw/react-md-editor";
 
 function ModifierBackgroundImage() {
     const { wikiId } = useParams();
     const [lienImage, setLienImage] = useState('');
+    const [mdImage, setMdImage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [wiki, setWiki] = useState(null);
     const navigate = useNavigate();
@@ -17,6 +19,7 @@ function ModifierBackgroundImage() {
 
     const majLienImage = (e) => {
         setLienImage(e.target.value);
+        setMdImage('![Veuillez insérer une image]('+e.target.value+')');
     };
 
     useEffect(() => {
@@ -60,6 +63,7 @@ function ModifierBackgroundImage() {
                     <button onClick={handleUpdateBackgroundImage}>Confirmer</button>
                     <p>{errorMessage}</p>
                     <button style={{ cursor: 'pointer' }} onClick={handleRetourClick}>Retour</button>
+                    <MDEditor.Markdown source ={mdImage}/>
                 </div>
             ) : (
                 <div>
