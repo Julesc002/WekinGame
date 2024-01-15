@@ -1,8 +1,8 @@
+import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
-import MDEditor from "@uiw/react-md-editor";
 
 function AjoutWiki() {
     const { nomParDefaut } = useParams();
@@ -58,7 +58,7 @@ function AjoutWiki() {
     }
 
     return (
-        <div>
+        <div class="padded">
           {localStorage.getItem('account') === null ? (
             <div>
                 <h2>Vous devez être connecté pour créer un wiki</h2>
@@ -73,7 +73,7 @@ function AjoutWiki() {
               </div>
               <textarea rows="10" placeholder="Description" onChange={majDesc} />
               <input type="text" placeholder="Lien de l'image de fond" value={image} onChange={majImage} />
-              <MDEditor.Markdown source={mdImage}/>
+              <MDEditor.Markdown source={mdImage} class=""/>
               <div>
                   <button class="button-highlight" onClick={handleAddWiki}>Valider</button>
                   <button style={{ cursor: 'pointer' }} onClick={handleRetourClick}>Retour</button>

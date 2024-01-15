@@ -1,9 +1,9 @@
+import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
 import BackgroundWiki from "./BackgroundWiki";
-import MDEditor from "@uiw/react-md-editor";
 
 function ModifierBackgroundImage() {
     const { wikiId } = useParams();
@@ -55,9 +55,10 @@ function ModifierBackgroundImage() {
     }
 
     return (
-        <div>
+        <div  class="contenuWiki">
             {isUserOwner() ? (
                 <div>
+                    <h2>Modifier l'image de fond</h2>
                     <BackgroundWiki id={wikiId} />
                     <input type="text" placeholder="Lien de l'image de fond" onChange={majLienImage} />
                     <button onClick={handleUpdateBackgroundImage}>Confirmer</button>

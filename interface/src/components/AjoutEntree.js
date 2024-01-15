@@ -138,30 +138,34 @@ function AjoutEntree() {
     console.log(donnees);
 
     return (
-        <div class="flex-down">
+        <div  class="contenuWiki">
             <BackgroundWiki id={id} />
             <h2>Nouvelle entrée</h2>
-            <label>
-                Nom de l'entrée :
-                <input type="text" placeholder='Ex: "Master Sword"' onChange={(e) => majNameEntree(e)} />
-            </label>
-            <label>
-                Catégorie :
-                {categories && categories.map(function (categorie) {
-                    return (
-                        <div class="append">
-                            <input type="checkbox" name={categorie} onChange={handleCheckboxChange}/>
-                            <label for={categorie}>{categorie}</label>
-                        </div>
-                    );
-                })}
-            </label>
+            <div>
+                <label>
+                    Nom de l'entrée :
+                    <input type="text" placeholder='Ex: "Master Sword"' onChange={(e) => majNameEntree(e)} />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Catégorie :
+                    {categories && categories.map(function (categorie) {
+                        return (
+                            <div class="append">
+                                <input type="checkbox" name={categorie} onChange={handleCheckboxChange}/>
+                                <label for={categorie}>{categorie}</label>
+                            </div>
+                        );
+                    })}
+                </label>
+            </div>
             <AjoutCategorie />
             <label>
                 Donnée·s :
                 {donnees && donnees.map(function (donnee, index) {
                     return (
-                        <div key={index} class="small-box-content flex-down">
+                        <div key={index} class="box-content flex-down">
                                 <div class="flex-spaced">
                                     <input type="text" placeholder="Titre" value={donnees[index][0]} onChange={(e) => handleMajDonneeTitle(e, index)} />
                                     <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
