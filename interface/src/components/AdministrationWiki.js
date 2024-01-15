@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL } from '../config';
 import BackgroundWiki from "./BackgroundWiki";
-import MessageErreur from "./MessageErreur";
+import MessageForbidden from "./MessageForbidden";
 
 function AdminWiki() {
     const { wikiId} = useParams();
@@ -138,7 +138,7 @@ function AdminWiki() {
     }
     else{
         return(
-            <MessageErreur/>
+            <MessageForbidden/>
         )
     }
 }

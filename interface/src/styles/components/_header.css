@@ -4,10 +4,7 @@
     position: sticky;
     top: 0;
     box-sizing: content-box;
-    margin: -0.6vw;
-    margin-left: -1.6vw;
     margin-bottom: 2vw;
-    margin-right: -0.5vw;
     padding: 1vw;
     background-color: var(--middle-color);
     color: var(--lightest-color);

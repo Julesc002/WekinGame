@@ -2,11 +2,13 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_URL, APP_URL } from '../config';
+import MDEditor from "@uiw/react-md-editor";
 
 function AjoutWiki() {
     const { nomParDefaut } = useParams();
     const [nom, setNom] = useState(nomParDefaut);
     const [image, setImage] = useState('');
+    const [mdImage, setMdImage] = useState('');
     const [description, setDescrition] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const nav = useNavigate();
@@ -21,7 +23,10 @@ function AjoutWiki() {
 
     const majImage = (e) => {
         setImage(e.target.value);
+        setMdImage('![Veuillez insérer une image valide]('+e.target.value+')');
     };
+    
+    
 
     const majDesc = (e) => {
         setDescrition(e.target.value);
@@ -68,6 +73,7 @@ function AjoutWiki() {
               </div>
               <textarea rows="10" placeholder="Description" onChange={majDesc} />
               <input type="text" placeholder="Lien de l'image de fond" value={image} onChange={majImage} />
+              <MDEditor.Markdown source={mdImage}/>
               <div>
                   <button class="button-highlight" onClick={handleAddWiki}>Valider</button>
                   <button style={{ cursor: 'pointer' }} onClick={handleRetourClick}>Retour</button>

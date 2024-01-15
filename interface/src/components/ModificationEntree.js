@@ -131,6 +131,22 @@ function ModificationEntree() {
         />
     );
 
+    const handleUpDataIndex = (index) => {
+        const updatedData = [...entreeDonnees];
+        const data = updatedData[index];
+        updatedData[index] = updatedData[index - 1];
+        updatedData[index - 1] = data;
+        setEntreeDonnees(updatedData);
+    };
+
+    const handleDownDataIndex = (index) => {
+        const updatedData = [...entreeDonnees];
+        const data = updatedData[index];
+        updatedData[index] = updatedData[index + 1];
+        updatedData[index + 1] = data;
+        setEntreeDonnees(updatedData);
+    };
+
     return (
         <div className="flex-down">
             <BackgroundWiki id={wikiId} />
@@ -163,6 +179,8 @@ function ModificationEntree() {
                                             <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                         </div>
                                         {renderMarkdownEditor(index)}
+                                        {index != 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
+                                        {index != entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
                                 </div>
                             );
                         })}

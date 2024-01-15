@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import { API_URL } from '../config';
 
@@ -31,7 +31,7 @@ function AffichagesAllWikis() {
     };
 
     return (
-        <div>
+        <div class="padded">
             {Object.keys(wikis).map((letter) => (
                 <div key={letter}>
                     <h2>{letter}</h2>

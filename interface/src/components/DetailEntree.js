@@ -25,7 +25,7 @@ function DetailEntree() {
         });
     };
     return (
-        <div>
+        <div class="contenuWiki">
             <BackgroundWiki id={entry.id_wiki} />
             {entry && entry._id && (
                 <div>
