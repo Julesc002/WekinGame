@@ -125,6 +125,12 @@ function AjoutEntree() {
         updatedData[index] = updatedData[index - 1];
         updatedData[index - 1] = data;
         setDonnees(updatedData);
+
+        const updatedMarkdownContent = [...markdownContent];
+        const mdData = updatedMarkdownContent[index];
+        updatedMarkdownContent[index] = updatedMarkdownContent[index - 1];
+        updatedMarkdownContent[index - 1] = mdData;
+        setMarkdownContent(updatedMarkdownContent);
     };
 
     const handleDownDataIndex = (index) => {
@@ -133,6 +139,12 @@ function AjoutEntree() {
         updatedData[index] = updatedData[index + 1];
         updatedData[index + 1] = data;
         setDonnees(updatedData);
+
+        const updatedMarkdownContent = [...markdownContent];
+        const mdData = updatedMarkdownContent[index];
+        updatedMarkdownContent[index] = updatedMarkdownContent[index + 1];
+        updatedMarkdownContent[index + 1] = mdData;
+        setMarkdownContent(updatedMarkdownContent);
     };
 
     console.log(donnees);
