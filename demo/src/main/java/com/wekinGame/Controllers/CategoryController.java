@@ -69,7 +69,7 @@ public class CategoryController {
     }
     
 
-    @PutMapping("/modify/category/{newCategory}")
+    @PutMapping("/modify/category/{newCategoryName}")
     public ResponseEntity<String> modifyCategoryName(
         final @RequestBody Map<String, Object> oldCategoryName,
         final @PathVariable String newCategoryName
