@@ -148,10 +148,10 @@ function ModificationEntree() {
     };
 
     return (
-        <div className="flex-down">
+        <div class="contenuWiki">
             <BackgroundWiki id={wikiId} />
             {entree && (
-                <>
+                <div>
                     <h2>Modification de l'entrée</h2>
                     <label>
                         Nom de l'entrée :
@@ -173,14 +173,16 @@ function ModificationEntree() {
                         Donnée·s :
                         {entreeDonnees && entreeDonnees.map(function (donnee, index) {
                             return (
-                                <div key={index} class="small-box-content flex-down">
+                                <div key={index} class="box-content flex-down">
                                         <div class="flex-spaced">
                                             <input type="text" placeholder="Titre" value={entreeDonnees[index].titre} onChange={(e) => handleMajDonneeTitle(e, index)} />
                                             <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                         </div>
                                         {renderMarkdownEditor(index)}
-                                        {index != 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
-                                        {index != entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
+                                        <div>
+                                            {index != 0 && <button onClick={() => handleUpDataIndex(index)}>↑</button>}
+                                            {index != entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>↓</button>}
+                                        </div>
                                 </div>
                             );
                         })}
@@ -192,7 +194,7 @@ function ModificationEntree() {
                         <button class="button-highlight" onClick={updateEntree}>Valider l'entrée</button>
                     </div>
                     <p>{errorMessage}</p>
-                </>
+                </div>
             )}
         </div>
     );
