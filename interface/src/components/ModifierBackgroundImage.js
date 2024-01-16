@@ -68,7 +68,9 @@ function ModifierBackgroundImage() {
                 </div>
             ) : (
                 <div>
-                    <h1>Vous n'avez pas les droits pour modifier l'image de fond de ce wiki</h1>
+                    {wiki && wiki !== null ? (
+                        <h1>Vous n'avez pas les droits pour modifier l'image de fond de ce wiki</h1>
+                    ) : null}
                 </div>
             )}
         </div>

@@ -180,8 +180,8 @@ function ModificationEntree() {
                                         </div>
                                         {renderMarkdownEditor(index)}
                                         <div>
-                                            {index != 0 && <button onClick={() => handleUpDataIndex(index)}>↑</button>}
-                                            {index != entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>↓</button>}
+                                            {index !== 0 && <button onClick={() => handleUpDataIndex(index)}>↑</button>}
+                                            {index !== entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>↓</button>}
                                         </div>
                                 </div>
                             );

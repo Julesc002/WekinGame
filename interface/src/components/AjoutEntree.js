@@ -181,8 +181,8 @@ function AjoutEntree() {
                                     <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                 </div>
                                 {renderMarkdownEditor(index)}
-                                {index != 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
-                                {index != donnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
+                                {index !== 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
+                                {index !== donnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
                         </div>
                     );
                 })}
