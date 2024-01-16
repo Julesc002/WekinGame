@@ -7,6 +7,7 @@ function BackgroundWiki(props) {
     useEffect(() => {
         axios.get(`${API_URL}/wiki/${props.id}/background`).then((res) => {
             document.body.style.backgroundImage = `url(${res.data.url})`;
+            document.body.style.backgroundAttachment= 'fixed';
         }).catch((error) => {
             console.error(error);
         });

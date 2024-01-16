@@ -25,6 +25,7 @@ body {
   background-image: url("");
   background-size: cover;
   background-color: var(--darkest-color);
+  background-position: center calc(100px + 40px);
   color: var(--lightest-color);
   font-family: "Noto Sans", "sans-serif";
 }

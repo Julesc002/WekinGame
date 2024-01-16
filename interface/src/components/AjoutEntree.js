@@ -147,8 +147,6 @@ function AjoutEntree() {
         setMarkdownContent(updatedMarkdownContent);
     };
 
-    console.log(donnees);
-
     return (
         <div class="flex-down">
             <BackgroundWiki id={id} />
