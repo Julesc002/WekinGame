@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,11 @@ public class CategoryControllerTest {
     @InjectMocks
 	private CategoryController categoryController;
 
+    @AfterEach
+    public void clearInvocations() {
+        wikiMock.clearInvocations();
+        entryMock.clearInvocations();
+    }
 
     @AfterAll
     public static void close() {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,10 @@ public class UserControllerTest {
     @InjectMocks
 	private UserController userController;
 
+    @AfterEach
+    public void clearInvocations() {
+        userMock.clearInvocations();
+    }
 
     @AfterAll
     public static void close() {
