@@ -65,7 +65,7 @@ function AjoutEntree() {
             axios.post(API_URL + '/create/entry', entree).then((response) => {
                 if (response.status === 200) {
                     window.location.href = `${APP_URL}/wiki/${id}`;
-                } else if (response.data.code === "409") {
+                } else if (response.status === "409") {
                     alert("Erreur lors de la création de l'entrée");
                 }
             });
@@ -181,8 +181,8 @@ function AjoutEntree() {
                                     <button class="float-right" onClick={() => handleSupprDonnee(index)}>x</button>
                                 </div>
                                 {renderMarkdownEditor(index)}
-                                {index != 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
-                                {index != donnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
+                                {index !== 0 && <button onClick={() => handleUpDataIndex(index)}>+</button>}
+                                {index !== donnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>-</button>}
                         </div>
                     );
                 })}

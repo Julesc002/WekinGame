@@ -79,7 +79,7 @@ function ModificationEntree() {
             axios.put(API_URL + '/modify/entry/' + entreeId, entreeUpdate).then((response) => {
                 if (response.status === 200) {
                     window.location.href = `${APP_URL}/wiki/${wikiId}`;
-                } else if (response.data.code === "409") {
+                } else if (response.status === "409") {
                     alert("Erreur lors de la modification de l'entrée");
                 }
             });
@@ -180,8 +180,8 @@ function ModificationEntree() {
                                         </div>
                                         {renderMarkdownEditor(index)}
                                         <div>
-                                            {index != 0 && <button onClick={() => handleUpDataIndex(index)}>↑</button>}
-                                            {index != entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>↓</button>}
+                                            {index !== 0 && <button onClick={() => handleUpDataIndex(index)}>↑</button>}
+                                            {index !== entreeDonnees.length - 1 && <button onClick={() => handleDownDataIndex(index)}>↓</button>}
                                         </div>
                                 </div>
                             );

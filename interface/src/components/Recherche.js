@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { API_URL } from '../config';
 
@@ -9,6 +9,7 @@ function RechercheDeWiki() {
   const [mentions, setMentions] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [debouncedRecherche] = useDebouncedValue(recherche, 300);
+  const inputRechercheRef = useRef(null);
 
   useEffect(() => {
     rechercheWikiAPI(debouncedRecherche);
@@ -38,9 +39,16 @@ function RechercheDeWiki() {
     });
   };
 
+  const viderChampRecherche = () => {
+    setRecherche('');
+    if (inputRechercheRef.current) {
+      inputRechercheRef.current.value = '';
+    }
+  };
+
   return (
     <div>
-      <input type="text" placeholder="Recherche" onChange={majRecherche} class="text-medium" id="search-bar"></input>
+      <input type="text" placeholder="Recherche" onChange={majRecherche} ref={inputRechercheRef} class="text-medium" id="search-bar"></input>
       {recherche !== '' && (
         <div class="popup-search">
           <h4>Wikis :</h4>
@@ -55,7 +63,7 @@ function RechercheDeWiki() {
             wikis.map(function (wiki) {
               return(
                 <div class="append">
-                  <Link to={`/wiki/${wiki._id}`}>
+                  <Link to={`/wiki/${wiki._id}`} onClick={viderChampRecherche}>
                     <p key={wiki._id}>{wiki.nom}</p>
                   </Link>
                 </div>
@@ -68,14 +76,14 @@ function RechercheDeWiki() {
             entrees.map(function (entree) {
               return (
                 <div class="append" key={entree._id}>
-                <Link to={`/entree/${entree._id}`}>
+                <Link to={`/entree/${entree._id}`} onClick={viderChampRecherche}>
                   <p>{entree.nom} : {entree.wiki.nom}</p>
                 </Link>
                   <div class="append">
                     <h5> Catégorie(s) : </h5>
                     <ul>
                       {entree.categories.map((categorie, index) => (
-                        <Link to={`/categorie/${entree.wiki._id}/${categorie}`}>
+                        <Link to={`/categorie/${entree.wiki._id}/${categorie}`} onClick={viderChampRecherche}>
                           <li class="text-small" key={index}>{categorie}</li>
                         </Link>
                       ))}
@@ -92,14 +100,14 @@ function RechercheDeWiki() {
             mentions.map(function (mention) {
               return (
                 <div class="append" key={mention._id}>
-                  <Link to={`/entree/${mention._id}`}>
+                  <Link to={`/entree/${mention._id}`} onClick={viderChampRecherche}>
                     <p>{mention.nom} : {mention.wiki.nom}</p>
                   </Link>
                   <div class="append">
                     <h5>Catégorie(s) :</h5>
                     <ul>
                       {mention.categories.map((categorie, index) => (
-                        <Link to={`/categorie/${mention.wiki._id}/${categorie}`}>
+                        <Link to={`/categorie/${mention.wiki._id}/${categorie}`} onClick={viderChampRecherche}>
                           <li class="text-small" key={index}>{categorie}</li>
                         </Link>
                       ))}
