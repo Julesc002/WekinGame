@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
@@ -17,6 +19,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+import com.wekinGame.ressources.HTTPCodes;
 
 public class WikiRepository {
 
@@ -137,17 +140,17 @@ public class WikiRepository {
         collectionWiki.updateOne(Filters.eq("_id", idWiki), Updates.pull("admins", idAdmin));
     }
 
-    public static String updateBackgroundImage(final int idWiki, final Document setQuery) {
+    public static ResponseEntity<HTTPCodes> updateBackgroundImage(final int idWiki, final Document setQuery) {
         try {
             Document searchQuery = new Document("_id", idWiki);
             UpdateResult result = collectionWiki.updateOne(searchQuery, setQuery);
             if (result.getModifiedCount() == 0) {
-                return "404";
+                return new ResponseEntity<HTTPCodes>(HTTPCodes.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
-            return "200";
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.OK, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return "500";
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

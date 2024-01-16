@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mongodb.client.result.UpdateResult;
 import com.wekinGame.Repository.EntryRepository;
 import com.wekinGame.Repository.WikiRepository;
+import com.wekinGame.ressources.HTTPCodes;
 
 @RestController
 public class WikiController {
@@ -78,10 +79,9 @@ public class WikiController {
     }
 
     @PatchMapping("/wiki/{idWiki}/background")
-    public String patchBackgroundImage(
-        @PathVariable("idWiki") final String idWiki,
-        @RequestBody final Map<String, String> data
-    ) {
+    public ResponseEntity<HTTPCodes> patchBackgroundImage(
+            @PathVariable("idWiki") final String idWiki,
+            @RequestBody final Map<String, String> data) {
         Document newBackgroundImage = new Document("imageBackground", data.get("image"));
         Document setNewBackGroundImage = new Document("$set", newBackgroundImage);
         return WikiRepository.updateBackgroundImage(Integer.parseInt(idWiki), setNewBackGroundImage);
@@ -108,7 +108,8 @@ public class WikiController {
             return new Document("_id", id);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Document("error", 500);
+            return new Document("Response",
+                    new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.UNAUTHORIZED));
         }
     }
 
@@ -118,51 +119,51 @@ public class WikiController {
     }
 
     @PutMapping("/wiki/{idWiki}/admin/add")
-    public ResponseEntity<String> addAdminOnWikis(
+    public ResponseEntity<HTTPCodes> addAdminOnWikis(
             final @RequestBody Map<String, String> admin,
             final @PathVariable String idWiki) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             UpdateResult result = WikiRepository.addAdminToWiki(idAdmin, Integer.parseInt(idWiki));
             if (result.getModifiedCount() == 0) {
-                return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HTTPCodes.NOT_FOUND, HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>("200 OK", HttpStatus.OK);
+            return new ResponseEntity<>(HTTPCodes.OK, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/wiki/{idWiki}/admin/delete")
-    public ResponseEntity<String> removeAdmin(
+    public ResponseEntity<HTTPCodes> removeAdmin(
             final @RequestBody Map<String, String> admin,
             final @PathVariable String idWiki) {
         try {
             int idAdmin = verifyParametersAndGetIdAdmin(admin, idWiki);
             WikiRepository.removeAdminFromWiki(idAdmin, Integer.parseInt(idWiki));
-            return new ResponseEntity<>("200 OK", HttpStatus.OK);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.OK, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/wiki/{id}/delete")
-    public ResponseEntity<String> removeWiki(
+    public ResponseEntity<HTTPCodes> removeWiki(
             @PathVariable String id,
             @RequestBody Map<String, Integer> user) {
         try {
             if (WikiRepository.isOwnerByWikiId(Integer.parseInt(id), user.get("id"))) {
                 EntryRepository.deleteAllEntriesForOneWiki(Integer.parseInt(id));
                 WikiRepository.deleteWiki(Integer.parseInt(id));
-                return new ResponseEntity<>("200 OK", HttpStatus.OK);
+                return new ResponseEntity<HTTPCodes>(HTTPCodes.OK, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("403 Forbidden", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<HTTPCodes>(HTTPCodes.FORBIDDEN, HttpStatus.FORBIDDEN);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -209,9 +210,8 @@ public class WikiController {
     }
 
     private boolean isAdmin(
-        final int idWiki,
-        final int idUser
-    ) {
+            final int idWiki,
+            final int idUser) {
         for (Document admin : getAdmins(idWiki)) {
             Document adminData = (Document) admin.get("adminsdata");
             if ((int) adminData.get("_id") == idUser) {

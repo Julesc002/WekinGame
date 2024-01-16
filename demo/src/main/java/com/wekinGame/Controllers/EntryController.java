@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wekinGame.Model.Entry;
 import com.wekinGame.Repository.EntryRepository;
+import com.wekinGame.ressources.HTTPCodes;
 
 @RestController
 public class EntryController {
@@ -24,38 +25,36 @@ public class EntryController {
     public Document getEntry(final @PathVariable("idEntry") String idEntry) {
         return EntryRepository.getEntry(Integer.parseInt(idEntry));
     }
-    
+
     @GetMapping("/searchEntry")
     public List<Document> searchEntriesByName(
-        final @RequestParam(value = "nom", defaultValue = "") String nom
-    ) {
+            final @RequestParam(value = "nom", defaultValue = "") String nom) {
         List<Document> results = new ArrayList<Document>();
         if (nom.length() == 0) {
             return results;
         } else {
-            return EntryRepository.searchEntriesByName(results,nom);
+            return EntryRepository.searchEntriesByName(results, nom);
         }
     }
 
     @GetMapping("/searchEntryByDescription")
     public List<Document> searchEntriesByDescription(
-        final @RequestParam(value = "donnees", defaultValue = "") String donnees
-    ) {
+            final @RequestParam(value = "donnees", defaultValue = "") String donnees) {
         List<Document> results = new ArrayList<Document>();
-        if(donnees.length() != 0){
+        if (donnees.length() != 0) {
             results = EntryRepository.searchEntryByDesc(results, donnees);
         }
         return results;
     }
 
     @PostMapping("/create/entry")
-    public ResponseEntity<String> createEntry(final @RequestBody Entry entry) {
+    public ResponseEntity<HTTPCodes> createEntry(final @RequestBody Entry entry) {
         try {
             if (entry.getCategories().size() == 0
-            && entry.getDonnees().size() == 0
-            && entry.getId_wiki() < 0
-            && entry.getNom() == null) {
-                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+                    && entry.getDonnees().size() == 0
+                    && entry.getId_wiki() < 0
+                    && entry.getNom() == null) {
+                return new ResponseEntity<HTTPCodes>(HTTPCodes.BAD_REQUEST, HttpStatus.BAD_REQUEST);
             }
             List<Document> donnees = new ArrayList<Document>();
             for (int i = 0; i < entry.getDonnees().size(); i++) {
@@ -69,10 +68,10 @@ public class EntryController {
                     .append("categories", entry.getCategories())
                     .append("donnees", donnees);
             EntryRepository.createEntry(newEntry);
-            return new ResponseEntity<>("200 OK", HttpStatus.OK);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.OK, HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace(); // Affichez l'erreur dans la console pour le débogage.
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,36 +79,33 @@ public class EntryController {
     public void deleteEntry(final @PathVariable String idEntry) {
         EntryRepository.deleteEntry(Integer.parseInt(idEntry));
     }
-    
+
     @PutMapping("/modify/entry/{idEntry}")
-    public ResponseEntity<String> modifyEntry(
-        final @RequestBody Entry entry,
-        final @PathVariable String idEntry
-    ) {
+    public ResponseEntity<HTTPCodes> modifyEntry(
+            final @RequestBody Entry entry,
+            final @PathVariable String idEntry) {
         try {
             if (entry.getCategories().size() == 0
-            && entry.getDonnees().size() == 0
-            && entry.getId_wiki() < 0
-            && entry.getNom() == null) {
-                return new ResponseEntity<>("400 Bad Request", HttpStatus.BAD_REQUEST);
+                    && entry.getDonnees().size() == 0
+                    && entry.getId_wiki() < 0
+                    && entry.getNom() == null) {
+                return new ResponseEntity<HTTPCodes>(HTTPCodes.BAD_REQUEST, HttpStatus.BAD_REQUEST);
             }
             List<Document> donnees = new ArrayList<Document>();
             for (int i = 0; i < entry.getDonnees().size(); i++) {
                 donnees.add(new Document()
-                    .append("titre", entry.getDonnees().get(i).getTitre())
-                    .append("contenu", entry.getDonnees().get(i).getContenu())
-                );
+                        .append("titre", entry.getDonnees().get(i).getTitre())
+                        .append("contenu", entry.getDonnees().get(i).getContenu()));
             }
             Document modifiedEntry = new Document("$set", new Document()
-                .append("nom", entry.getNom())
-                .append("id_wiki", entry.getId_wiki())
-                .append("categories", entry.getCategories())
-                .append("donnees", donnees)
-            );
+                    .append("nom", entry.getNom())
+                    .append("id_wiki", entry.getId_wiki())
+                    .append("categories", entry.getCategories())
+                    .append("donnees", donnees));
             return EntryRepository.modifyEntry(Integer.parseInt(idEntry), modifiedEntry);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("500 Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

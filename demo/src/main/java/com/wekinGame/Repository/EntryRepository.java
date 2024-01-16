@@ -18,6 +18,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.UpdateResult;
+import com.wekinGame.ressources.HTTPCodes;
 
 public class EntryRepository {
 
@@ -162,11 +163,11 @@ public class EntryRepository {
         collection.deleteMany(Filters.eq("id_wiki", id_wiki));
     }
 
-    public static ResponseEntity<String> modifyEntry(final int _id, final Document modifyEntry) {
+    public static ResponseEntity<HTTPCodes> modifyEntry(final int _id, final Document modifyEntry) {
         UpdateResult result = collection.updateOne(Filters.eq("_id", _id), modifyEntry);
         if (result.getModifiedCount() == 0) {
-            return new ResponseEntity<>("404 Not Found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<HTTPCodes>(HTTPCodes.NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("200 OK", HttpStatus.OK);
+        return new ResponseEntity<HTTPCodes>(HTTPCodes.OK, HttpStatus.OK);
     }
 }
