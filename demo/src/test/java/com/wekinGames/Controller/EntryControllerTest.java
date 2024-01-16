@@ -12,9 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.wekinGame.Controllers.EntryController;
+import com.wekinGame.Model.Donnees;
+import com.wekinGame.Model.Entry;
 import com.wekinGame.Repository.EntryRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -135,5 +138,132 @@ public class EntryControllerTest {
 
         //THEN
         assertEquals(expectedEntries, obtainedEntries);
+    }
+
+    @Test
+    public void testCreateEntry(){
+        //GIVEN
+        int idEntry = 1;
+        int idWiki = 1;
+        Entry givenEntry = new Entry();
+        Donnees givenDonnee = new Donnees("testDonnees","testContenu");
+        ArrayList<Donnees> givenDonnees = new ArrayList<Donnees>();
+        givenDonnees.add(givenDonnee);
+        List<String> givenCategories = new ArrayList<String>();
+        givenCategories.add("category1");
+        givenCategories.add("category2");
+        givenEntry.setId(idEntry);
+        givenEntry.setNom("testEntry");
+        givenEntry.setId_wiki(idWiki);
+        givenEntry.setCategories(givenCategories);
+        givenEntry.setDonnees(givenDonnees);
+        List<Document> donnees = new ArrayList<Document>();
+        for (int i = 0; i < givenEntry.getDonnees().size(); i++) {
+            donnees.add(new Document()
+                    .append("titre", givenEntry.getDonnees().get(i).getTitre())
+                    .append("contenu", givenEntry.getDonnees().get(i).getContenu()));
+        }
+        Document expectedEntry = new Document("_id", EntryRepository.getIdMax() + 1)
+                .append("nom", givenEntry.getNom())
+                .append("id_wiki", givenEntry.getId_wiki())
+                .append("categories", givenEntry.getCategories())
+                .append("donnees", donnees);
+
+        //WHEN
+        entryController.createEntry(givenEntry);
+
+        //THEN
+        entryMock.verify(() -> EntryRepository.createEntry(expectedEntry), Mockito.times(1));
+    }
+
+    @Test
+    public void testCreateEntryCaseEmptyEntry(){
+        //GIVEN
+        int idEntry = 1;
+        int idWiki = 1;
+        Entry emptyGivenEntry = new Entry();
+        ArrayList<Donnees> emptyGivenDonnees = new ArrayList<Donnees>();
+        List<String> emptyGivenCategories = new ArrayList<String>();
+        emptyGivenEntry.setId(idEntry);
+        emptyGivenEntry.setNom("testEntry");
+        emptyGivenEntry.setId_wiki(idWiki);
+        emptyGivenEntry.setCategories(emptyGivenCategories);
+        emptyGivenEntry.setDonnees(emptyGivenDonnees);
+        Document expectedEntry = new Document();
+
+        //WHEN
+        entryController.createEntry(emptyGivenEntry);
+
+        //THEN
+        entryMock.verify(() -> EntryRepository.createEntry(expectedEntry), Mockito.never());
+    }
+
+    @Test
+    public void testDeleteEntry(){
+        //GIVEN
+        String idEntry = "1";
+
+        //WHEN
+        entryController.deleteEntry(idEntry);
+
+        //THEN
+        entryMock.verify(() -> EntryRepository.deleteEntry(Integer.parseInt(idEntry)), Mockito.times(1));
+    }
+
+    @Test
+    public void testModifyEntry(){
+        String idEntry = "1";
+        int idWiki = 1;
+        Entry givenEntry = new Entry();
+        Donnees givenDonnee = new Donnees("testDonnees","testContenu");
+        ArrayList<Donnees> givenDonnees = new ArrayList<Donnees>();
+        givenDonnees.add(givenDonnee);
+        List<String> givenCategories = new ArrayList<String>();
+        givenCategories.add("category1");
+        givenCategories.add("category2");
+        givenEntry.setId(Integer.parseInt(idEntry));
+        givenEntry.setNom("testEntry");
+        givenEntry.setId_wiki(idWiki);
+        givenEntry.setCategories(givenCategories);
+        givenEntry.setDonnees(givenDonnees);
+        List<Document> donnees = new ArrayList<Document>();
+        for (int i = 0; i < givenEntry.getDonnees().size(); i++) {
+            donnees.add(new Document()
+                    .append("titre", givenEntry.getDonnees().get(i).getTitre())
+                    .append("contenu", givenEntry.getDonnees().get(i).getContenu()));
+        }
+        Document modifiedEntry = new Document("$set", new Document()
+                .append("nom", givenEntry.getNom())
+                .append("id_wiki", givenEntry.getId_wiki())
+                .append("categories", givenEntry.getCategories())
+                .append("donnees", donnees)
+            );
+
+        //WHEN
+        entryController.modifyEntry(givenEntry, idEntry);
+
+        //THEN
+        entryMock.verify(() -> EntryRepository.modifyEntry(Integer.parseInt(idEntry),modifiedEntry), Mockito.times(1));
+    }
+
+    @Test
+    public void testModifyEntryCaseEmptyEntry(){
+        String idEntry = "1";
+        int idWiki = 1;
+        Entry emptyGivenEntry = new Entry();
+        ArrayList<Donnees> emptyGivenDonnees = new ArrayList<Donnees>();
+        List<String> emptyGivenCategories = new ArrayList<String>();
+        emptyGivenEntry.setId(Integer.parseInt(idEntry));
+        emptyGivenEntry.setNom("testEntry");
+        emptyGivenEntry.setId_wiki(idWiki);
+        emptyGivenEntry.setCategories(emptyGivenCategories);
+        emptyGivenEntry.setDonnees(emptyGivenDonnees);
+        Document modifiedEntry = new Document();
+
+        //WHEN
+        entryController.modifyEntry(emptyGivenEntry, idEntry);
+
+        //THEN
+        entryMock.verify(() -> EntryRepository.modifyEntry(Integer.parseInt(idEntry),modifiedEntry), Mockito.never());
     }
 }
