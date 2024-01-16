@@ -87,7 +87,7 @@ function AdminWiki() {
                 navigate(0);
             }
         }).catch((error)=>{
-            if (error.response.status){   
+            if (error.response.status){
                 const errorElement = document.getElementById("admindeleteerror");
                 errorElement.innerHTML ="Erreur lors de la suppression";
             }
@@ -100,7 +100,7 @@ function AdminWiki() {
     
     if (isUserOwner()){
         return (
-            <div className="flex-down">
+            <div class="contenuWiki">
                 <BackgroundWiki id={wikiId} />
                 {admin && admin[0] && (
                     <div>
@@ -121,7 +121,7 @@ function AdminWiki() {
                                             <div class="flex-spaced">
                                                 <p>{donnee.adminsdata.pseudo}</p>
                                                 {donnee.adminsdata._id != localStorage.getItem('account') ? (
-                                                    <button class="float-right" onClick={() => handleSupprAdmin(index,donnee.adminsdata.pseudo)}>Supprimer les droits</button>
+                                                    <button class="float-right" onClick={() => handleSupprAdmin(index,donnee.adminsdata.pseudo)}>Supprimer</button>
                                                 ) : null}
                                             </div>
                                     </div>

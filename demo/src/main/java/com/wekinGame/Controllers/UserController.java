@@ -1,7 +1,6 @@
 package com.wekinGame.Controllers;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wekinGame.Repository.UserRepository;
 import com.wekinGame.ressources.Hasher;
 import com.wekinGame.ressources.JavaMail;
-import com.wekinGame.ressources.idGenerator;
 
 
 @RestController
 public class UserController{
-    public static Pattern EMAIL_REGEX = Pattern.compile("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
-
 
     @PostMapping("/user/new")
     public Document createUser(
@@ -32,23 +28,23 @@ public class UserController{
         if (UserRepository.usernameOrEmailTaken(username, email)) {
             return new Document("msg","try to change email address or username");
         }
-        Document newUser = new Document("pseudo",username)
-            .append("_id",idGenerator.newUserId())
-            .append("mail",email)
-            .append("mdp",Hasher.hashPassword(password))
+        Document newUser = new Document("pseudo", username)
+            .append("_id", UserRepository.newUserId())
+            .append("mail", email)
+            .append("mdp", Hasher.hashPassword(password))
             .append("date_naissance",bday);
         UserRepository.push(newUser);
         JavaMail.sendBienvenueEmail(email, username);
-        return new Document("msg","mail envoyé");
+        return new Document("msg", "mail envoyé");
     }
 
     @GetMapping("/user/{id}/delete")
-    public Document DeleteUser(final @PathVariable int id){
+    public Document deleteUser(final @PathVariable int id){
         if(UserRepository.exist(id)){
             UserRepository.delete(id);
             return new Document("msg","deletion complete");
         }
-        return new Document("msg","try to change email address or username");
+        return new Document("msg","this user doesn't exist");
     }
 
     @GetMapping("/user/{id}/info")

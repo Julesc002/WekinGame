@@ -2,6 +2,7 @@
 
 :root {
     --darkest-color: #1f1d33;
+    --darkest-color-transparent: #1f1d33e5;
     --middle-color: #31334b;
     --lightest-color: #7f91a3;
     --highlight-color: #ffc400;
@@ -59,11 +60,6 @@ button:hover {
     background-color: var(--link-hover-color);
 }
 
-::placeholder {
-    color: var(--darkest-color);
-    opacity: 0.7;
-}
-
 a {
     color: var(--link-color);
 }
@@ -108,7 +104,9 @@ ul{
   }
 
   .padded {
+    padding: 1vw;
     padding-left: 4vw;
+    padding-right: 4vw;
   }
 
   .contenuWiki {
@@ -117,8 +115,7 @@ ul{
     margin: 4vw;
     margin-top: -2vw;
     margin-bottom: 0;
-    background: var(--darkest-color);
-    opacity: 0.8;
+    background: var(--darkest-color-transparent);
     padding: 4vw;
     padding-right: 8vw;
   }
@@ -139,6 +136,14 @@ ul{
   .small-box-content {
     margin: 2vw;
     width: 40%;
+    border-radius: 0.75vw;
+    padding: 1vw;
+    background-color: var(--middle-color);
+    box-shadow: -0.25vw 0.25vw 1vw 0.5vw #05011746;
+  }
+
+  .box-content {
+    margin: 2vw;
     border-radius: 0.75vw;
     padding: 1vw;
     background-color: var(--middle-color);

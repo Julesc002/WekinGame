@@ -7,6 +7,7 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.wekinGame.ressources.Hasher;
 
 public class UserRepository {
@@ -56,5 +57,13 @@ public class UserRepository {
     public static void delete(int id) {
         Document queryParameter = new Document("_id", id);
         collection.deleteOne(queryParameter);
+    }
+
+    public static Integer newUserId(){
+        List<Document> sortedEntries = collection.find()
+            .projection(new Document("_id",1))
+            .sort(Sorts.descending("_id"))
+            .into(new ArrayList<>());
+        return (Integer) sortedEntries.get(0).get("_id")+1;
     }
 }

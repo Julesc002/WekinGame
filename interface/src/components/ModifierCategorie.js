@@ -38,7 +38,7 @@ function ModifierCategorie() {
     }
 
     return (
-        <div>
+        <div  class="contenuWiki">
             <BackgroundWiki id={id} />
             <p> Ancien nom de la catégorie : {oldCategoryName} </p>
             <input type="text" placeholder="Nouveau nom categorie" onChange={handleChangeName} value={newCategoryName} />
