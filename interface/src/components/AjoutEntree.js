@@ -65,7 +65,7 @@ function AjoutEntree() {
             axios.post(API_URL + '/create/entry', entree).then((response) => {
                 if (response.status === 200) {
                     window.location.href = `${APP_URL}/wiki/${id}`;
-                } else if (response.data.code === "409") {
+                } else if (response.status === "409") {
                     alert("Erreur lors de la création de l'entrée");
                 }
             });

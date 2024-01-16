@@ -50,7 +50,7 @@ function WikiContent() {
         axios.get(`${API_URL}/delete/entry/${entryId}`).then((res) => {
           if (res.status === 200) {
             window.location.reload();
-          } else if (res.data.code === "409") {
+          } else if (res.status === "409") {
             alert("Erreur lors de la suppression de l'entrée");
           }
         }).catch((error) => {
@@ -88,7 +88,7 @@ function WikiContent() {
                 axios.patch(`${API_URL}/wiki/${wiki._id}/${categoryName}/delete`).then((res) => {
                     if (res.status === 200) {
                       window.location.reload();
-                    } else if (res.data.code === "409") {
+                    } else if (res.status === "409") {
                       alert("Erreur lors de la suppression de la catégorie");
                     }
                   }).catch((error) => {

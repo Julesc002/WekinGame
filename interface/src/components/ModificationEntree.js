@@ -79,7 +79,7 @@ function ModificationEntree() {
             axios.put(API_URL + '/modify/entry/' + entreeId, entreeUpdate).then((response) => {
                 if (response.status === 200) {
                     window.location.href = `${APP_URL}/wiki/${wikiId}`;
-                } else if (response.data.code === "409") {
+                } else if (response.status === "409") {
                     alert("Erreur lors de la modification de l'entrée");
                 }
             });
