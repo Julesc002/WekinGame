@@ -64,9 +64,6 @@ function WikiContent() {
         if (window.confirm("Voulez-vous vraiment supprimer le wiki "+name+"?\nCela supprimera tout les éléments realitfs au wiki, comprenant les entrées et les catégories")){
             if (window.confirm("Cette action est irréversible !\nVous êtes VRAIMENT sûr?")){
                 const uid = localStorage.getItem("account");
-                const content={
-                    id: uid
-                }
                 axios.delete(`${API_URL}/wiki/${wikiId}/delete`,{data:{id:uid}})
                 .then((res)=> {
                     if (res.status === 200){

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { API_URL } from '../config';
+import { API_URL, APP_URL } from '../config';
 import BackgroundWiki from "./BackgroundWiki";
 
 function ModifierCategorie() {
@@ -23,17 +23,15 @@ function ModifierCategorie() {
             id: parseInt(id),
             categories: oldCategoryName
         };
-        console.log(requestData);
         if (newCategoryName.trim().length === 0) {
             setErrorMessage("Veuillez remplir le champ");
         } else {
             setErrorMessage("");
             axios.put( API_URL+'/modify/category/' + newCategoryName, requestData).then((response) => {
-                console.log(response);
+                window.location.href = `${APP_URL}/wiki/${id}`;
             }).catch((error) => {
                 console.error("Erreur lors de la modification de la categorie :", error);
             });
-            navigate(-1);
         }
     }
 
